@@ -44,3 +44,5 @@ elseif(UNIX)
 else()
 	message(FATAL_ERROR "Only support windows and linux operating system")
 endif()
+
+add_compile_definitions(__OPENGL__)

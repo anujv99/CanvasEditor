@@ -1,8 +1,12 @@
 
+/*
+ *	A strong handle is a handle to the handled object. Just like a std::shared_ptr
+ */
+
 #ifndef __STRING_HANDLE_H__
 #define __STRING_HANDLE_H__
 
-namespace paint { namespace utils {
+namespace app { namespace utils {
 
 	template<typename T>
 	class StrongHandle {

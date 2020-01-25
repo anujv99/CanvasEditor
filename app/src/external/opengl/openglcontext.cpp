@@ -39,7 +39,7 @@ namespace app {
 			glGetIntegerv(GL_MAJOR_VERSION, &versionMajor);
 			glGetIntegerv(GL_MINOR_VERSION, &versionMinor);
 
-			ASSERTM(versionMajor > 4 || (versionMajor == 4 && versionMinor >= 5), "Cannot run software below OpenGL version 4.5");
+			ASSERTM(versionMajor > 4 || (versionMajor == 4 && versionMinor >= 5), "[OpenGL] Cannot run software below OpenGL version 4.5");
 
 		}
 

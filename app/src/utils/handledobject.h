@@ -1,4 +1,9 @@
 
+/*
+ *	Handled object is like a shared object with only one instance
+ *	This reduce dynamic memory usage and unnecesiary duplication of resources and also takes care of freeing allocated memory
+ */
+
 #ifndef __HANDLED_OBJECT_H__
 #define __HANDLED_OBJECT_H__
 
