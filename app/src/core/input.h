@@ -2,6 +2,8 @@
 #ifndef __INPUT_H__
 #define __INPUT_H__
 
+#include <vector>
+
 #include <math/math.h>
 
 #include <core/events/event.h>

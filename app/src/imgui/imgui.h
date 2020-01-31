@@ -10,8 +10,8 @@
 namespace app {
 
 	struct ImGui {
-		static const pvint AUTOPOS  = -1;
-		static const pvint AUTOSIZE = -1;
+		static constexpr int AUTOPOS	= -1;
+		static constexpr int AUTOSIZE	= -1;
 
 		static void Begin(const std::string & name, Vec2i pos = Vec2i(AUTOPOS), Vec2i dimen = Vec2i(AUTOSIZE));
 		static void End();

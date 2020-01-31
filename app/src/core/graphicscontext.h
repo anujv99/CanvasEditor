@@ -9,6 +9,8 @@
 #ifndef __GRAPHICS_CONTEXT_H__
 #define __GRAPHICS_CONTEXT_H__
 
+#include <cstdint>
+
 #include <utils/singleton.h>
 
 namespace app {

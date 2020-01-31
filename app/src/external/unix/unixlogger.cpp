@@ -1,6 +1,9 @@
 
 #ifdef __UNIX__
 
+#include <cstdarg>
+#include <cstdio>
+
 #include <core/logger.h>
 
 namespace app { namespace core {

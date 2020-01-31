@@ -7,6 +7,7 @@
 #include <ios>
 
 #include "handledobject.h"
+#include "assert.h"
 
 #define ROOT_PATH "../../../../"
 
@@ -48,11 +49,11 @@ namespace app { namespace utils {
 		}
 
 		inline StrongHandle<DataFile> OpenFile(const char * path) {
-			ASSERTM(FileExists(path), "File not found : %s", path);
+			ASSERTM(FileExists(path), "File not found");
 			DataFile * file = new DataFile();
 			file->m_File = std::fstream(path);
 			file->m_FilePath = path;
-			ASSERTM(file->m_File, "Failed to open file %s", path);
+			ASSERTM(file->m_File, "Failed to open file");
 		}
 
 	};

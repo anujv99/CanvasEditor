@@ -5,8 +5,8 @@
 #include "core/input.h"
 #include "renderer/renderer.h"
 
-#include "ImGuiwindow.h"
-#include "ImGuimanager.h"
+#include "imguiwindow.h"
+#include "imguimanager.h"
 
 namespace app {
 

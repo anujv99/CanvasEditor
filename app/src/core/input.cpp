@@ -1,5 +1,7 @@
 #include "input.h"
 
+#include <cstring>
+
 namespace app { namespace core {
 
 	bool Input::m_Keys[MAX_KEYS]							= {};

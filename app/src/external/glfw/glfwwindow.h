@@ -11,7 +11,7 @@
 #include <core/window.h>
 
 //#define GLFW_INCLUDE_NONE
-#include <glfw/glfw3.h>
+#include <GLFW/glfw3.h>
 
 namespace app { namespace external { namespace glfw {
 

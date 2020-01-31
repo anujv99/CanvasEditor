@@ -10,6 +10,7 @@
 #define __WINDOW_H__
 
 #include <functional>
+#include <cstdint>
 
 #include <utils/singleton.h>
 #include <core/events/event.h>

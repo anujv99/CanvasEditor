@@ -10,11 +10,11 @@ namespace app { namespace renderer {
 	static constexpr const unsigned int TEXTURE_SIZE_Y = 1024u;
 
 	float PixelsToPoints(float pixels) {
-		return unsigned int(pixels * 0.75f);
+		return (unsigned int)(pixels * 0.75f);
 	}
 
 	float PointsToPixels(float pixels) {
-		return unsigned int(pixels * 1.333333333f);
+		return (unsigned int)(pixels * 1.333333333f);
 	}
 
 	Font::Font(const char * file, float points) : m_Points(points) {

@@ -1,5 +1,7 @@
 #include "imguimanager.h"
 
+#include <cstring>
+
 #include "core/window.h"
 #include "core/input.h"
 

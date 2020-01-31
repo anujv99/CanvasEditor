@@ -95,45 +95,45 @@ namespace app { namespace renderer {
 		int texIndex = SubmitTexture(texture);
 
 		m_Vertices[m_VertexIndex++] = { pos + Vec2(-size.x, size.y) / 2.0f, texCoordTopLeft, texIndex,
-			unsigned char(color.x * 255.0f),
-			unsigned char(color.y * 255.0f),
-			unsigned char(color.z * 255.0f),
-			unsigned char(color.w * 255.0f)
+			(unsigned char)(color.x * 255.0f),
+			(unsigned char)(color.y * 255.0f),
+			(unsigned char)(color.z * 255.0f),
+			(unsigned char)(color.w * 255.0f)
 		};
 
 		m_Vertices[m_VertexIndex++] = { pos + Vec2(size.x, size.y) / 2.0f, Vec2(texCoordBottomRight.x, texCoordTopLeft.y), texIndex,
-			unsigned char(color.x * 255.0f),
-			unsigned char(color.y * 255.0f),
-			unsigned char(color.z * 255.0f),
-			unsigned char(color.w * 255.0f)
+			(unsigned char)(color.x * 255.0f),
+			(unsigned char)(color.y * 255.0f),
+			(unsigned char)(color.z * 255.0f),
+			(unsigned char)(color.w * 255.0f)
 		};
 
 		m_Vertices[m_VertexIndex++] = { pos + Vec2(size.x, -size.y) / 2.0f, texCoordBottomRight, texIndex,
-			unsigned char(color.x * 255.0f),
-			unsigned char(color.y * 255.0f),
-			unsigned char(color.z * 255.0f),
-			unsigned char(color.w * 255.0f)
+			(unsigned char)(color.x * 255.0f),
+			(unsigned char)(color.y * 255.0f),
+			(unsigned char)(color.z * 255.0f),
+			(unsigned char)(color.w * 255.0f)
 		};
 
 		m_Vertices[m_VertexIndex++] = { pos + Vec2(-size.x, size.y) / 2.0f, texCoordTopLeft, texIndex,
-			unsigned char(color.x * 255.0f),
-			unsigned char(color.y * 255.0f),
-			unsigned char(color.z * 255.0f),
-			unsigned char(color.w * 255.0f)
+			(unsigned char)(color.x * 255.0f),
+			(unsigned char)(color.y * 255.0f),
+			(unsigned char)(color.z * 255.0f),
+			(unsigned char)(color.w * 255.0f)
 		};
 
 		m_Vertices[m_VertexIndex++] = { pos + Vec2(size.x, -size.y) / 2.0f, texCoordBottomRight, texIndex,
-			unsigned char(color.x * 255.0f),
-			unsigned char(color.y * 255.0f),
-			unsigned char(color.z * 255.0f),
-			unsigned char(color.w * 255.0f)
+			(unsigned char)(color.x * 255.0f),
+			(unsigned char)(color.y * 255.0f),
+			(unsigned char)(color.z * 255.0f),
+			(unsigned char)(color.w * 255.0f)
 		};
 
 		m_Vertices[m_VertexIndex++] = { pos + Vec2(-size.x, -size.y) / 2.0f, Vec2(texCoordTopLeft.x, texCoordBottomRight.y), texIndex,
-			unsigned char(color.x * 255.0f),
-			unsigned char(color.y * 255.0f),
-			unsigned char(color.z * 255.0f),
-			unsigned char(color.w * 255.0f)
+			(unsigned char)(color.x * 255.0f),
+			(unsigned char)(color.y * 255.0f),
+			(unsigned char)(color.z * 255.0f),
+			(unsigned char)(color.w * 255.0f)
 		};
 
 	}
