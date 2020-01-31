@@ -10,4 +10,5 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: configure
-      run: mkdir build && cd build && cmake .. && MSbuild Application.sln
+      shell: cmd
+      run: mkdir build && cd build && cmake ..
