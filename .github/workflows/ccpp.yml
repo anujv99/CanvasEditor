@@ -1,0 +1,38 @@
+name: build
+
+on: [push]
+
+jobs:
+  Windows:
+    runs-on: windows-2019
+    env:
+      MSBUILD_PATH: C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\
+      TOOLS_PATH: C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\
+    steps:
+    - uses: actions/checkout@v2
+    - name: configure
+      shell: cmd
+      run: git submodule update --init --recursive
+    - name: generate project
+      shell: cmd
+      run: mkdir build && cd build && cmake ..
+    - name: build
+      shell: cmd
+      run: |
+        "%TOOLS_PATH%\VsDevCmd.bat" && MSBuild "%GITHUB_WORKSPACE%\build\Application.sln"
+  Linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: configure
+        shell: bash
+        run: git submodule update --init --recursive
+      - name: dependencies
+        shell: bash
+        run: sudo apt-get install xorg-dev libglu1-mesa-dev
+      - name: generate project
+        shell: bash
+        run: mkdir build && cd build && cmake ..
+      - name: build
+        shell: bash
+        run: ls && make -C build/
