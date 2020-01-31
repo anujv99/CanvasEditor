@@ -20,3 +20,16 @@ jobs:
       shell: cmd
       run: |
         "%TOOLS_PATH%\VsDevCmd.bat" && MSBuild "%GITHUB_WORKSPACE%\build\Application.sln"
+  Linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: configure
+        shell: bash
+        run: git submodule update --init --recursive
+      - name: generate project
+        shell: bash
+        run: mkdir build && cd build && cmake .. && ls && la
+      - name: build
+        shell: bash
+        run: make
