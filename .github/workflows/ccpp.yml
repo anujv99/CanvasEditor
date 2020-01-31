@@ -19,5 +19,4 @@ jobs:
     - name: build
       shell: cmd
       run: |
-        "%TOOLS_PATH%\VsDevCmd.bat" &&
-        MSBuild Application.sln
+        "%TOOLS_PATH%\VsDevCmd.bat" && MSBuild Application.sln
