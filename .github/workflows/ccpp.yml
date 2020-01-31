@@ -17,4 +17,5 @@ jobs:
       run: mkdir build && cd build && cmake ..
     - name: build
       shell: cmd
-      run: %MSBUILD_PTH%\MSBuild.exe Application.sln
+      run: |
+        %MSBUILD_PATH%\MSBuild.exe Application.sln
