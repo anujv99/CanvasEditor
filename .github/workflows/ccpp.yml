@@ -35,4 +35,4 @@ jobs:
         run: mkdir build && cd build && cmake ..
       - name: build
         shell: bash
-        run: ls && make -C /
+        run: ls && make -C build/
