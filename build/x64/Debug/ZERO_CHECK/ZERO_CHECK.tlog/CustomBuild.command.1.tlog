@@ -1,0 +1,10 @@
+^C:\USERS\PREVE\DESKTOP\CS525\BUILD\CMAKEFILES\6D7F68812CCC291FE99190BE585A7271\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/preve/Desktop/CS525 -BC:/Users/preve/Desktop/CS525/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/preve/Desktop/CS525/build/Application.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

@@ -14,10 +14,14 @@
 #define MAX_MOUSE_BUTTONS			5
 #define MAX_CHARACTER_PER_FRAME		16
 
+namespace app {
+	class Application;
+}
+
 namespace app { namespace core {
 
 	class Input {
-		friend class Application;
+		friend class ::app::Application;
 	public:
 		static bool IsKeyDown(unsigned short keyCode);
 		static bool IsKeyPressed(unsigned short keyCode);

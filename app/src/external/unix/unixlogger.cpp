@@ -1,5 +1,5 @@
 
-#ifdef __LINUX__
+#ifdef __UNIX__
 
 #include <core/logger.h>
 

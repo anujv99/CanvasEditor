@@ -1,0 +1,19 @@
+# CMake generation dependency list for this directory.
+C:/Program Files/CMake/share/cmake-3.16/Modules/BasicConfigVersion-SameMajorVersion.cmake.in
+C:/Program Files/CMake/share/cmake-3.16/Modules/CMakeDependentOption.cmake
+C:/Program Files/CMake/share/cmake-3.16/Modules/CMakePackageConfigHelpers.cmake
+C:/Program Files/CMake/share/cmake-3.16/Modules/CheckCSourceCompiles.cmake
+C:/Program Files/CMake/share/cmake-3.16/Modules/CheckIncludeFile.c.in
+C:/Program Files/CMake/share/cmake-3.16/Modules/CheckIncludeFile.cmake
+C:/Program Files/CMake/share/cmake-3.16/Modules/CheckLibraryExists.cmake
+C:/Program Files/CMake/share/cmake-3.16/Modules/FindDoxygen.cmake
+C:/Program Files/CMake/share/cmake-3.16/Modules/FindPackageHandleStandardArgs.cmake
+C:/Program Files/CMake/share/cmake-3.16/Modules/FindPackageMessage.cmake
+C:/Program Files/CMake/share/cmake-3.16/Modules/FindThreads.cmake
+C:/Program Files/CMake/share/cmake-3.16/Modules/GNUInstallDirs.cmake
+C:/Program Files/CMake/share/cmake-3.16/Modules/WriteBasicConfigVersionFile.cmake
+C:/Users/preve/Desktop/CS525/app/vendor/glfw/CMake/cmake_uninstall.cmake.in
+C:/Users/preve/Desktop/CS525/app/vendor/glfw/CMakeLists.txt
+C:/Users/preve/Desktop/CS525/app/vendor/glfw/src/glfw3.pc.in
+C:/Users/preve/Desktop/CS525/app/vendor/glfw/src/glfw3Config.cmake.in
+C:/Users/preve/Desktop/CS525/app/vendor/glfw/src/glfw_config.h.in
