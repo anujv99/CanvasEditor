@@ -7,6 +7,7 @@ jobs:
     runs-on: windows-2019
     env:
       MSBUILD_PATH: C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\
+      TOOLS_PATH: C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\Tools\
     steps:
     - uses: actions/checkout@v2
     - name: configure
@@ -18,4 +19,5 @@ jobs:
     - name: build
       shell: cmd
       run: |
-        "%MSBUILD_PATH%\MSBuild.exe" Application.sln
+        "%TOOLS_PATH%\VsDevCmd.bat" &&
+        MSBuild Application.sln
