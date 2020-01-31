@@ -18,4 +18,4 @@ jobs:
     - name: build
       shell: cmd
       run: |
-        %MSBUILD_PATH%\MSBuild.exe Application.sln
+        '"%MSBUILD_PATH%\MSBuild.exe" Application.sln'
