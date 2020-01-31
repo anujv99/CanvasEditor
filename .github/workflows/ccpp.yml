@@ -3,10 +3,10 @@ name: C/C++ CI
 on: [push]
 
 jobs:
-  build:
-
+  Windows:
     runs-on: windows-2019
-    
+    env:
+      MSBUILD_PATH: C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\
     steps:
     - uses: actions/checkout@v2
     - name: configure
@@ -17,4 +17,4 @@ jobs:
       run: mkdir build && cd build && cmake ..
     - name: build
       shell: cmd
-      run: MSBuild Application.sln
+      run: %MSBUILD_PTH%\MSBuild.exe Application.sln
