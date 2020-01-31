@@ -1,0 +1,16 @@
+name: C/C++ CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: windows-2019
+    
+    steps:
+    - uses: actions/checkout@v2
+    - name: configure
+      shell: cmd
+      run: git submodule update --init --recursive
+    - name: build
+      run: mkdir build && cd build && cmake ..
