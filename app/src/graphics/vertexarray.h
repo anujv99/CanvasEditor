@@ -1,5 +1,7 @@
 
 /*
+ *  Interface to graphics API specific vertex array
+ *  Actual implementation is in the folder external/opengl
  *  Vertex array feeds data present in the vertex buffer to the vertex shader described by the buffer layout
  */
 

@@ -54,8 +54,8 @@ namespace app { namespace graphics {
      *  A shader program consist of one vertex and one fragment shader and should be binded before a draw call
      */
 
-    class ShaderProgram : public utils::HandledObject<ShaderProgram>{
-        friend class utils::HandledObject<ShaderProgram>;
+    class ShaderProgram : public utils::HandledObject<ShaderProgram> {
+        friend class utils::StrongHandle<ShaderProgram>;
     protected:
         ShaderProgram() {}
         virtual ~ShaderProgram() {}
@@ -66,7 +66,7 @@ namespace app { namespace graphics {
     public:
         // This function should be implemented in order to create a shader program
         static utils::StrongHandle<ShaderProgram> Create(utils::StrongHandle<VertexShader> vShader, utils::StrongHandle<FragmentShader> fShader);
-    }
+    };
 
 } }
 

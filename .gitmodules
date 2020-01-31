@@ -1,3 +1,12 @@
 [submodule "app/vendor/glfw"]
 	path = app/vendor/glfw
 	url = https://github.com/preversewharf45/glfw
+[submodule "app/vendor/prevmath"]
+	path = app/vendor/prevmath
+	url = https://github.com/preversewharf45/PrevMath/
+[submodule "app/vendor/freetype"]
+	path = app/vendor/freetype
+	url = https://github.com/preversewharf45/freetype2
+[submodule "app/vendor/freetype-gl"]
+	path = app/vendor/freetype-gl
+	url = https://github.com/preversewharf45/freetype-gl

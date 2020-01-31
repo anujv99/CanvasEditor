@@ -28,7 +28,8 @@ namespace app { namespace external { namespace opengl {
         virtual void UnMap() override;
         virtual void SetBufferLayout(utils::StrongHandle<graphics::BufferLayout> & layout) override;
 
-        inline virtual size_t GetStride() const override { return m_Size; }
+        inline virtual utils::StrongHandle<graphics::BufferLayout> GetBufferLayout() const override { return m_Layout; };
+        inline virtual size_t GetStride() const override { return m_Stride; }
         inline virtual size_t GetSize() const override { return m_Size; }
     private:
         GLuint m_ID;

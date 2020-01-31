@@ -40,6 +40,7 @@ namespace app { namespace graphics {
         virtual void * Map() = 0;
         virtual void UnMap() = 0;
         virtual void SetBufferLayout(utils::StrongHandle<BufferLayout> & layout) = 0;
+        virtual utils::StrongHandle<BufferLayout> GetBufferLayout() const = 0;
         virtual size_t GetStride() const = 0;
         virtual size_t GetSize() const = 0;
     public:

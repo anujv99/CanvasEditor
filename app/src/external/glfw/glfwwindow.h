@@ -24,6 +24,9 @@ namespace app { namespace external { namespace glfw {
         virtual void Update() override;
         virtual uintptr_t GetRawWindow() override;
         virtual void SetEventFunction(std::function<void(app::core::events::Event &)> eventFunc) override;
+
+        inline virtual unsigned int GetWidth() const override { return m_Data.Width; };
+        inline virtual unsigned int GetHeight() const override { return m_Data.Height;  };
     private:
         void SetCallbacks();
     private:

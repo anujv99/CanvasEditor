@@ -21,8 +21,10 @@ namespace app {
 	public:
 		void Run();
 	private:
-		void OnEvent(core::events::Event & e);
+		void Render();
+		void Gui();
 
+		void OnEvent(core::events::Event & e);
 		bool OnWindowClose(core::events::WindowCloseEvent & e);
 	private:
 		bool  m_IsRunning;

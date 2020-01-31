@@ -47,7 +47,6 @@ namespace app {
 			glfwSetWindowUserPointer(m_Window, (void *)&m_Data);
 
 			SetCallbacks();
-
 		}
 
 		void GLFWWindow::Update() {
