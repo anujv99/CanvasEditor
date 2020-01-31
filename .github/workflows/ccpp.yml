@@ -9,6 +9,9 @@ jobs:
     
     steps:
     - uses: actions/checkout@v2
+	- name: update submodules
+	 	shell: cmd
+	 	run: git submodule update --init --recursive
     - name: configure
       shell: cmd
       run: mkdir build && cd build && cmake ..
