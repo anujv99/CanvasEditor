@@ -12,5 +12,9 @@ jobs:
     - name: configure
       shell: cmd
       run: git submodule update --init --recursive
-    - name: build
+    - name: generate project
+      shell: cmd
       run: mkdir build && cd build && cmake ..
+    - name: build
+      shell: cmd
+      run: MSBuild Application.sln
