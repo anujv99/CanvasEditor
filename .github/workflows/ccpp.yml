@@ -29,7 +29,7 @@ jobs:
         run: git submodule update --init --recursive
       - name: dependencies
         shell: bash
-        run: sudo apt-get install xorg-dev libglu1-mesa-dev
+        run: sudo apt-get update && sudo apt-get install xorg-dev libglu1-mesa-dev
       - name: generate project
         shell: bash
         run: mkdir build && cd build && cmake ..
