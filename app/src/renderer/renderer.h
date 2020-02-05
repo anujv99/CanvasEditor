@@ -18,6 +18,7 @@
 #include <graphics/shader.h>
 #include <graphics/vertexarray.h>
 #include <graphics/texture.h>
+#include <graphics/framebuffer.h>
 
 #include "font.h"
 
@@ -35,8 +36,13 @@ namespace app { namespace renderer {
 		void DrawSprite(Vec2 pos, Vec2 size, Vec4 color);
 		void DrawSprite(Vec2 pos, Vec2 size, Vec4 color, Vec2 texCoordTopLeft, Vec2 texCoordBottomRight, utils::StrongHandle<graphics::Texture> texture);
 		void DrawText(utils::StrongHandle<Font> font, const Label & label);
+
+		// from framebuffer cannot be the default framebuffer
+		// to pass a framebuffer to the default framebuffer pass to = nullptr
+		void PassFramebuffer(utils::StrongHandle<graphics::Framebuffer> from, utils::StrongHandle<graphics::Framebuffer> to);
 	private:
-		void CreateRenderer();
+		void CreateRendererObjects();
+		void CreateFramebufferObjects();
 		int SubmitTexture(utils::StrongHandle<graphics::Texture> texture);
 	private:
 		struct RendererVertex {
@@ -50,6 +56,10 @@ namespace app { namespace renderer {
 		utils::StrongHandle<graphics::VertexArray> m_RendererVertexArray;
 		utils::StrongHandle<graphics::ShaderProgram> m_RendererShader;
 		utils::StrongHandle<graphics::UniformBuffer> m_MVPBuffer;
+
+		utils::StrongHandle<graphics::VertexBuffer> m_FramebufferRendererBuffer;
+		utils::StrongHandle<graphics::VertexArray> m_FramebufferRendererVertexArray;
+		utils::StrongHandle<graphics::ShaderProgram> m_FramebufferRendererShader;
 
 		RendererVertex * m_Vertices = nullptr;
 		std::vector<utils::StrongHandle<graphics::Texture>> m_Textures;

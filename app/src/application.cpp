@@ -78,7 +78,7 @@ namespace app {
 	void Application::Render() {
 		fbo->Bind();
 		fbo->Clear(Vec4(0.0f, 0.0f, 0.0f, 1.0f));
-		
+
 		renderer::Renderer::Ref().BeginScene();
 		
 		renderer::Renderer::Ref().DrawSprite(Vec2(0.0f), Vec2(1.0f), Vec4(1.0f));
@@ -99,12 +99,7 @@ namespace app {
 
 		fbo->UnBind();
 
-		renderer::Renderer::Ref().BeginScene();
-
-		renderer::Renderer::Ref().DrawSprite(Vec2(0.0f), Vec2(1.0f), Vec4(1.0f), Vec2(0.0f, 1.0f), Vec2(1.0f, 0.0f), fbo->GetTexture());
-
-		renderer::Renderer::Ref().EndScene();
-
+		renderer::Renderer::Ref().PassFramebuffer(fbo, nullptr);
 	}
 
 	void Application::Gui() {

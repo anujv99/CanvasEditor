@@ -7,7 +7,8 @@ namespace app { namespace renderer {
 	using namespace graphics;
 
 	Renderer::Renderer() {
-		CreateRenderer();
+		CreateRendererObjects();
+		CreateFramebufferObjects();
 
 		m_MVPBuffer = graphics::UniformBuffer::Create(Mat4().GetFloatPtr(), sizeof(Mat4), graphics::BufferUsage::DYNAMIC);
 		m_MVPBuffer->Bind(m_RendererShader->GetUniformLocation("MVP"));
@@ -15,7 +16,28 @@ namespace app { namespace renderer {
 
 	Renderer::~Renderer() {}
 
-	void Renderer::CreateRenderer() {
+	void Renderer::PassFramebuffer(utils::StrongHandle<graphics::Framebuffer> from, utils::StrongHandle<graphics::Framebuffer> to) {
+		ASSERTM(from != nullptr, "Cannot sample from default framebuffer");
+		if (to != nullptr) {
+			to->Bind();
+		} else {
+			from->UnBind();
+		}
+		
+
+		m_FramebufferRendererVertexArray->Bind();
+		m_FramebufferRendererShader->Bind();
+
+		from->GetTexture()->Bind(0);
+
+		m_FramebufferRendererVertexArray->Draw(6);
+
+		if (to != nullptr) {
+			to->UnBind();
+		}
+	}
+
+	void Renderer::CreateRendererObjects() {
 		m_RendererBuffer = VertexBuffer::Create(nullptr, MAX_VERTICES * sizeof(RendererVertex), sizeof(RendererVertex), BufferUsage::DYNAMIC);
 
 		utils::StrongHandle<BufferLayout> layout = BufferLayout::Create();
@@ -38,6 +60,37 @@ namespace app { namespace renderer {
 
 		m_RendererVertexArray = VertexArray::Create();
 		m_RendererVertexArray->AddVertexBuffer(m_RendererBuffer);
+	}
+
+	void Renderer::CreateFramebufferObjects() {
+
+		float vertices[] = {
+			-1.0f,  1.0f, 0.0f, 1.0f,
+			 1.0f,  1.0f, 1.0f, 1.0f,
+			 1.0f, -1.0f, 1.0f, 0.0f,
+
+			-1.0f,  1.0f, 0.0f, 1.0f,
+			 1.0f, -1.0f, 1.0f, 0.0f,
+			-1.0f, -1.0f, 0.0f, 0.0f,
+		};
+
+		m_FramebufferRendererBuffer = VertexBuffer::Create(vertices, sizeof(vertices), 4 * sizeof(float), BufferUsage::STATIC);
+
+		utils::StrongHandle<BufferLayout>  layout = BufferLayout::Create();
+		layout->BeginEntries();
+		layout->AddEntry(DataType::Float2, 0, "POSITION", false);
+		layout->AddEntry(DataType::Float2, 2 * sizeof(float), "TEX_COORD", false);
+		layout->EndEntries();
+
+		m_FramebufferRendererBuffer->SetBufferLayout(layout);
+
+		auto vShader = VertexShader::Create(GL_V_FRAMEBUFFER_SHADER);
+		auto fShader = FragmentShader::Create(GL_F_FRAMEBUFFER_SHADER);
+
+		m_FramebufferRendererShader = ShaderProgram::Create(vShader, fShader);
+
+		m_FramebufferRendererVertexArray = VertexArray::Create();
+		m_FramebufferRendererVertexArray->AddVertexBuffer(m_FramebufferRendererBuffer);
 	}
 
 	int Renderer::SubmitTexture(utils::StrongHandle<Texture> texture) {

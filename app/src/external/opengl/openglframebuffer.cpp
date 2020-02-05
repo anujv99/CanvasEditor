@@ -19,7 +19,7 @@ namespace app {
 			ASSERTM(m_ID > 0, "[OpenGL] Failed to create framebuffer");
 
 			graphics::TextureParams params;
-			params.Filtering = graphics::TextureFiltering::LINEAR;
+			params.Filtering = graphics::TextureFiltering::NEAREST;
 			params.InternalFormat = format;
 			params.Wrapping = graphics::TextureWrapping::CLAMP;
 

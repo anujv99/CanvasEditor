@@ -127,14 +127,13 @@ namespace app {
 			LOG_INFO("\tRenderer: %s", glGetString(GL_RENDERER));
 			LOG_INFO("\tVersion: %s", glGetString(GL_VERSION));
 
-			glDisable(GL_DEPTH_TEST);
-
 			GLint versionMajor, versionMinor;
 			glGetIntegerv(GL_MAJOR_VERSION, &versionMajor);
 			glGetIntegerv(GL_MINOR_VERSION, &versionMinor);
 
 			ASSERTM(versionMajor > 4 || (versionMajor == 4 && versionMinor >= 5), "[OpenGL] Cannot run software below OpenGL version 4.5");
 
+			glDisable(GL_DEPTH_TEST);
 			glfwSwapInterval(1);
 		}
 

@@ -53,3 +53,33 @@ static constexpr char GL_F_RENDERER_SHADER[] = R"(
 			FragColor = outCol * passColor;
 		}
 )";
+
+static constexpr char GL_V_FRAMEBUFFER_SHADER[] = R"(
+	#version 450 core
+
+	layout (location = 0) in vec2 iPos;
+	layout (location = 1) in vec2 iTexCoord;
+
+	out vec2 passTexCoord;
+
+	void main() {
+		passTexCoord = iTexCoord;
+		gl_Position = vec4(iPos.xy, 0.0f, 1.0f);
+	}
+
+)";
+
+static constexpr char GL_F_FRAMEBUFFER_SHADER[] = R"(
+	#version 450 core
+
+	layout (binding = 0) uniform sampler2D tex;
+
+	out vec4 FragColor;
+
+	in vec2 passTexCoord;
+
+	void main() {
+		FragColor = texture(tex, passTexCoord);
+	}
+
+)";
