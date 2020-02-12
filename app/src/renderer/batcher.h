@@ -19,16 +19,16 @@ namespace app { namespace renderer {
 			r(red), g(green), b(blue), a(alpha) {
 		}
 		VertexColor(float red, float green, float blue, float alpha) : r(0), g(0), b(0), a(0) {
-			r = unsigned char(red	* 255.0f);
-			g = unsigned char(green	* 255.0f);
-			b = unsigned char(blue	* 255.0f);
-			a = unsigned char(alpha	* 255.0f);
+			r = (unsigned char)(red	* 255.0f);
+			g = (unsigned char)(green	* 255.0f);
+			b = (unsigned char)(blue	* 255.0f);
+			a = (unsigned char)(alpha	* 255.0f);
 		}
 		VertexColor(float val) : r(0), g(0), b(0), a(0) {
-			r = unsigned char(val * 255.0f);
-			g = unsigned char(val * 255.0f);
-			b = unsigned char(val * 255.0f);
-			a = unsigned char(val * 255.0f);
+			r = (unsigned char)(val * 255.0f);
+			g = (unsigned char)(val * 255.0f);
+			b = (unsigned char)(val * 255.0f);
+			a = (unsigned char)(val * 255.0f);
 		}
 	};
 
