@@ -19,7 +19,7 @@ jobs:
     - name: build
       shell: cmd
       run: |
-        "%TOOLS_PATH%\VsDevCmd.bat" && MSBuild "%GITHUB_WORKSPACE%\build\Application.sln"
+        "%TOOLS_PATH%\VsDevCmd.bat" && MSBuild "%GITHUB_WORKSPACE%\build\Paint.sln"
   Linux:
     runs-on: ubuntu-latest
     steps:
