@@ -13,11 +13,12 @@ namespace app { namespace external { namespace opengl {
 
 	class OpenGLFramebuffer : public graphics::Framebuffer {
 	public:
-		OpenGLFramebuffer(Vec2i size, graphics::TextureFormat format);
+		OpenGLFramebuffer(Vec2i size, graphics::TextureFormat format, graphics::FBOFlags flags);
 		~OpenGLFramebuffer();
 	public:
 		virtual void Bind() override;
 		virtual void UnBind() override;
+		virtual void Resolve() override;
 		virtual void Clear() override;
 		virtual void Clear(Vec4 color) override;
 
@@ -26,6 +27,11 @@ namespace app { namespace external { namespace opengl {
 	private:
 		utils::StrongHandle<graphics::Texture> m_Tex;
 		GLuint m_ID;
+		Vec2i m_Size;
+		// For MSAA
+		bool m_IsMultisampled;
+		GLuint m_MSAAFbo;
+		GLuint m_MSAATexID;
 	};
 
 } } }

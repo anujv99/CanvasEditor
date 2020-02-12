@@ -78,10 +78,12 @@ namespace app {
 			virtual void SetTopology(Topology topology) = 0;
 			virtual void SetViewport(Viewport viewport) = 0;
 			virtual void SetBlendFunction(BlendFunction func) = 0;
+			virtual void SetLineThickness(float thickness) = 0;
 
 			virtual Topology GetTopology() const = 0;
 			virtual Viewport GetViewport() const = 0;
 			virtual BlendFunction GetBlendFunction() const = 0;
+			virtual float GetLineThickness() const = 0;
 		private:
 			static RenderState * Create();
 		};

@@ -8,6 +8,8 @@
 
 #include <core/events/event.h>
 #include <core/events/windowevent.h>
+#include <core/layerstack.h>
+#include <core/timer.h>
 
 #include <utils/singleton.h>
 
@@ -20,7 +22,11 @@ namespace app {
 		~Application();
 	public:
 		void Run();
+
+		inline void PushLayer(utils::StrongHandle<core::Layer> layer) { m_LayerStack.PushLayer(layer); }
+		inline void PopLayer(utils::StrongHandle<core::Layer> layer) { m_LayerStack.PopLayer(layer); }
 	private:
+		void Update();
 		void Render();
 		void Gui();
 
@@ -28,6 +34,7 @@ namespace app {
 		bool OnWindowClose(core::events::WindowCloseEvent & e);
 	private:
 		bool  m_IsRunning;
+		core::LayerStack m_LayerStack;
 	};
 
 }

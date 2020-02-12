@@ -2,16 +2,18 @@ add_subdirectory(vendor/glfw)
 add_subdirectory(vendor/glad)
 add_subdirectory(vendor/freetype)
 add_subdirectory(vendor/freetype-gl)
+add_subdirectory(vendor/lua)
 
 file(GLOB_RECURSE application_source_files "src/*.*")
 
-add_executable(Application ${application_source_files})
+add_library(Application ${application_source_files})
 
 target_include_directories(Application PRIVATE "src")
 target_include_directories(Application PRIVATE "vendor/glfw/include/")
 target_include_directories(Application PRIVATE "vendor/glad/include")
 target_include_directories(Application PRIVATE "vendor/freetype/include")
 target_include_directories(Application PRIVATE "vendor/freetype-gl")
+target_include_directories(Application PRIVATE "vendor/lua")
 
 target_include_directories(Application PUBLIC "vendor/prevmath/include")
 
@@ -19,6 +21,7 @@ target_link_libraries(Application PRIVATE glfw)
 target_link_libraries(Application PRIVATE glad)
 target_link_libraries(Application PRIVATE freetype)
 target_link_libraries(Application PRIVATE freetype-gl)
+target_link_libraries(Application PRIVATE Lua)
 
 option(LOGGING "Enable/Disable Logging" TRUE)
 option(ASSERT "Enable/Disable Assers" TRUE)

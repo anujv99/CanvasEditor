@@ -5,7 +5,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(Application)
+project(Paint)
 
 add_subdirectory(app)
+add_subdirectory(paint)
 
 set(VS_STARTUP_PROJECT Application)

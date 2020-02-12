@@ -30,6 +30,8 @@ namespace app { namespace renderer {
 
 		from->GetTexture()->Bind(0);
 
+		RenderState::Ref().SetTopology(Topology::TRIANGLE);
+
 		m_FramebufferRendererVertexArray->Draw(6);
 
 		if (to != nullptr) {
@@ -74,7 +76,7 @@ namespace app { namespace renderer {
 			-1.0f, -1.0f, 0.0f, 0.0f,
 		};
 
-		m_FramebufferRendererBuffer = VertexBuffer::Create(vertices, sizeof(vertices), 4 * sizeof(float), BufferUsage::STATIC);
+		auto fbobuffer = VertexBuffer::Create(vertices, sizeof(vertices), 4 * sizeof(float), BufferUsage::STATIC);
 
 		utils::StrongHandle<BufferLayout>  layout = BufferLayout::Create();
 		layout->BeginEntries();
@@ -82,7 +84,7 @@ namespace app { namespace renderer {
 		layout->AddEntry(DataType::Float2, 2 * sizeof(float), "TEX_COORD", false);
 		layout->EndEntries();
 
-		m_FramebufferRendererBuffer->SetBufferLayout(layout);
+		fbobuffer->SetBufferLayout(layout);
 
 		auto vShader = VertexShader::Create(GL_V_FRAMEBUFFER_SHADER);
 		auto fShader = FragmentShader::Create(GL_F_FRAMEBUFFER_SHADER);
@@ -90,7 +92,7 @@ namespace app { namespace renderer {
 		m_FramebufferRendererShader = ShaderProgram::Create(vShader, fShader);
 
 		m_FramebufferRendererVertexArray = VertexArray::Create();
-		m_FramebufferRendererVertexArray->AddVertexBuffer(m_FramebufferRendererBuffer);
+		m_FramebufferRendererVertexArray->AddVertexBuffer(fbobuffer);
 	}
 
 	int Renderer::SubmitTexture(utils::StrongHandle<Texture> texture) {

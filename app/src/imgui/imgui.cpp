@@ -853,6 +853,31 @@ namespace app {
 		return val;
 	}
 
+	Vec3 ImGui::SliderVec3(const std::string & name, Vec3 & val, Vec3 min, Vec3 max) {
+		if (ImGuiIsMinimized()) return val;
+
+		Print(name);
+
+		SliderFloat("", val.x, min.x, max.x);
+		SliderFloat("", val.y, min.y, max.y);
+		SliderFloat("", val.z, min.z, max.z);
+
+		return val;
+	}
+
+	Vec4 ImGui::SliderVec4(const std::string & name, Vec4 & val, Vec4 min, Vec4 max) {
+		if (ImGuiIsMinimized()) return val;
+
+		Print(name);
+
+		SliderFloat("", val.x, min.x, max.x);
+		SliderFloat("", val.y, min.y, max.y);
+		SliderFloat("", val.z, min.z, max.z);
+		SliderFloat("", val.w, min.w, max.w);
+
+		return val;
+	}
+
 	Vec3 ImGui::SliderRGB(const std::string & name, Vec3 & val) {
 		if (ImGuiIsMinimized()) return val;
 		ImGuiGenWidgetID();

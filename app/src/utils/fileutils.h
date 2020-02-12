@@ -48,12 +48,13 @@ namespace app { namespace utils {
 			return std::string(ROOT_PATH) + path;
 		}
 
-		inline StrongHandle<DataFile> OpenFile(const char * path) {
+		inline static StrongHandle<DataFile> OpenFile(const char * path) {
 			ASSERTM(FileExists(path), "File not found");
 			DataFile * file = new DataFile();
 			file->m_File = std::fstream(path);
 			file->m_FilePath = path;
 			ASSERTM(file->m_File, "Failed to open file");
+			return file;
 		}
 
 	};

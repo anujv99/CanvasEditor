@@ -24,6 +24,8 @@ namespace app {
 		static pvfloat SliderFloat(const std::string & name, pvfloat & val, pvfloat min, pvfloat max);
 		static pvint SliderInt(const std::string & name, pvint & val, pvint min, pvint max);
 		static Vec2 SliderVec2(const std::string & name, Vec2 & val, Vec2 min, Vec2 max);
+		static Vec3 SliderVec3(const std::string & name, Vec3 & val, Vec3 min, Vec3 max);
+		static Vec4 SliderVec4(const std::string & name, Vec4 & val, Vec4 min, Vec4 max);
 
 		static Vec3 SliderRGB(const std::string & name, Vec3 & val);
 

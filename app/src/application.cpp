@@ -6,19 +6,28 @@
 
 #include "math/mvpstack.h"
 #include "renderer/renderer.h"
+#include "renderer/immgfx.h"
 
 #include "imgui/imguimanager.h"
 #include "imgui/imgui.h"
+
+#include "vm/vm.h"
+
+#include "utils/fileutils.h"
 
 #include "graphics/framebuffer.h"
 
 namespace app {
 
-	utils::StrongHandle<graphics::Framebuffer> fbo;
+	static utils::StrongHandle<graphics::Framebuffer> fbo;
 
 	Application::Application() : m_IsRunning(true) {
+		vm::VM::CreateInst();
+
+		vm::WindowConfig config = vm::VM::Ref().ReadConfigFile(utils::FileUtils::ConvertToRelativePath("res/scripts/config.lua").c_str());
+
 		core::Window::CreateInst();
-		core::Window::Ref().Create(1280, 720, "App Window");
+		core::Window::Ref().Create(config.Width, config.Height, config.Title.c_str());
 
 		core::Window::Ref().SetEventFunction(BIND_EVENT_FN(Application::OnEvent));
 
@@ -30,6 +39,7 @@ namespace app {
 		math::MVPStack::CreateInst();
 
 		renderer::Renderer::CreateInst();
+		renderer::ImmGFX::CreateInst();
 
 		imgui::ImGuiManager::CreateInst();
 
@@ -42,32 +52,49 @@ namespace app {
 		func.DestAlpha = graphics::BlendAlphaOption::ONE;
 		func.AlphaOperation = graphics::BlendOperation::ADD;
 		graphics::RenderState::Ref().SetBlendFunction(func);
-	
-		fbo = graphics::Framebuffer::Create(Vec2i(1280, 720), graphics::TextureFormat::RGBA);
-		//fbo->GetTexture()->Bind(0);
+
+		vm::VM::Ref().Run(utils::FileUtils::ConvertToRelativePath("res/scripts/main.lua").c_str());
+
+		Mat4 projection = Mat4::Ortho(0.0f, core::Window::Ref().GetWidth(), 0.0f, core::Window::Ref().GetHeight(), -1.0f, 1.0f);
+		math::MVPStack::Ref().Projection().Push(projection);
+
+		fbo = graphics::Framebuffer::Create(
+			Vec2i(core::Window::Ref().GetWidth(), core::Window::Ref().GetHeight()),
+			graphics::TextureFormat::RGBA, graphics::FBOFlags::MSAA_16X
+		);
+
+		graphics::RenderState::Ref().SetLineThickness(2.0f);
 	}
 
 	Application::~Application() {
+		math::MVPStack::Ref().Projection().Pop();
+
 		imgui::ImGuiManager::DestroyInst();
 		graphics::RenderState::DestroyInst();
 		renderer::Renderer::DestroyInst();
+		renderer::ImmGFX::DestroyInst();
 		math::MVPStack::DestroyInst();
 		core::GraphicsContext::DestroyInst();
 		core::Window::DestroyInst();
+		vm::VM::DestroyInst();
 	}
 
 	void Application::Run() {
 		
 		while (m_IsRunning) {
+			core::Timer::Update();
+
 			core::GraphicsContext::Ref().BeginFrame();
 
 			imgui::ImGuiManager::Ref().DetectConsumeInputs();
 			imgui::ImGuiManager::Ref().PreUpdate();
 
+			Update();
+
 			Render();
 
 			Gui();
-			
+
 			core::GraphicsContext::Ref().EndFrame();
 			core::Input::Update();
 			core::Window::Ref().Update();
@@ -75,35 +102,46 @@ namespace app {
 
 	}
 
+	void Application::Update() {
+		vm::VM::Ref().Update();
+
+		for (auto & l : m_LayerStack) {
+			l->OnUpdate(core::Timer::GetDeltaTime());
+		}
+	}
+
 	void Application::Render() {
 		fbo->Bind();
-		fbo->Clear(Vec4(0.0f, 0.0f, 0.0f, 1.0f));
+		fbo->Clear();
 
-		renderer::Renderer::Ref().BeginScene();
-		
-		renderer::Renderer::Ref().DrawSprite(Vec2(0.0f), Vec2(1.0f), Vec4(1.0f));
-		
-		renderer::Renderer::Ref().EndScene();
-		
-		ImGui::Begin("Hello");
-		ImGui::End();
-		
-		Mat4 proj = Mat4::Ortho(0, 1280, 0, 720, -1, 1);
-		math::MVPStack::Ref().Projection().Push(proj);
-		renderer::Renderer::Ref().BeginScene();
+		{
+			for (auto & l : m_LayerStack) {
+				l->OnRender();
+			}
+			renderer::ImmGFX::Ref().Render();
+		}
 
-		imgui::ImGuiManager::Ref().PostUpdate();
-
-		renderer::Renderer::Ref().EndScene();
-		math::MVPStack::Ref().Projection().Pop();
 
 		fbo->UnBind();
-
+		fbo->Resolve();
 		renderer::Renderer::Ref().PassFramebuffer(fbo, nullptr);
 	}
 
 	void Application::Gui() {
+		for (auto & l : m_LayerStack) {
+			l->OnImGuiUpdate();
+		}
 
+		Mat4 ortho = Mat4::Ortho(0, core::Window::Ref().GetWidth(), 0, core::Window::Ref().GetHeight(), -1, 1);
+		math::MVPStack::Ref().Projection().Push(ortho);
+
+		renderer::Renderer::Ref().BeginScene();
+
+		imgui::ImGuiManager::Ref().PostUpdate();
+
+		math::MVPStack::Ref().Projection().Pop();
+
+		renderer::Renderer::Ref().EndScene();
 	}
 
 	void Application::OnEvent(core::events::Event & e) {
@@ -112,6 +150,10 @@ namespace app {
 		core::events::EventDispatcher dispatcher(e);
 
 		dispatcher.Dispatch<core::events::WindowCloseEvent>(BIND_EVENT_FN(Application::OnWindowClose));
+
+		for (auto & l : m_LayerStack) {
+			l->OnEvent(e);
+		}
 	}
 
 	bool Application::OnWindowClose(core::events::WindowCloseEvent & e) {

@@ -57,7 +57,6 @@ namespace app { namespace renderer {
 		utils::StrongHandle<graphics::ShaderProgram> m_RendererShader;
 		utils::StrongHandle<graphics::UniformBuffer> m_MVPBuffer;
 
-		utils::StrongHandle<graphics::VertexBuffer> m_FramebufferRendererBuffer;
 		utils::StrongHandle<graphics::VertexArray> m_FramebufferRendererVertexArray;
 		utils::StrongHandle<graphics::ShaderProgram> m_FramebufferRendererShader;
 

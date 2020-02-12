@@ -10,3 +10,6 @@
 [submodule "app/vendor/freetype-gl"]
 	path = app/vendor/freetype-gl
 	url = https://github.com/preversewharf45/freetype-gl
+[submodule "app/vendor/lua"]
+	path = app/vendor/lua
+	url = https://github.com/preversewharf45/lua

@@ -12,7 +12,7 @@ namespace app {
 
 	namespace external { namespace opengl {
 
-		OpenGLRenderState::OpenGLRenderState() : m_Prim(), m_Viewport(), m_BlendFunc(), m_OpenGLPrim(GL_INVALID_ENUM) {}
+		OpenGLRenderState::OpenGLRenderState() : m_Prim(), m_Viewport(), m_BlendFunc(), m_OpenGLPrim(GL_INVALID_ENUM), m_LineThickness(1.0f) {}
 
 		OpenGLRenderState::~OpenGLRenderState() {}
 
@@ -40,6 +40,11 @@ namespace app {
 			}
 
 			m_BlendFunc = func;
+		}
+
+		void OpenGLRenderState::SetLineThickness(float thickness) {
+			glLineWidth(thickness);
+			m_LineThickness = thickness;
 		}
 
 	} }
