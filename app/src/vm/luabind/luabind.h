@@ -2,6 +2,8 @@
 #ifndef __LUA_BIND_H__
 #define __LUA_BIND_H__
 
+#include <cstring>
+
 #include <vm/lua.hpp>
 #include <vm/vmlogger.h>
 
