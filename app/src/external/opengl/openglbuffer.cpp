@@ -7,16 +7,15 @@ namespace app {
 	//------------- VERTEX BUFFER -------------
 
 	namespace graphics {
-		utils::StrongHandle<VertexBuffer> VertexBuffer::Create(const void * data, size_t size, size_t stride, BufferUsage usage) {
-			return dynamic_cast<VertexBuffer *>(new external::opengl::OpenGLVertexBuffer(data, size, stride, usage));
+		utils::StrongHandle<VertexBuffer> VertexBuffer::Create(const void * data, size_t size, BufferUsage usage) {
+			return dynamic_cast<VertexBuffer *>(new external::opengl::OpenGLVertexBuffer(data, size, usage));
 		}
 	}
 
 	namespace external { namespace opengl {
 
-		OpenGLVertexBuffer::OpenGLVertexBuffer(const void * data, size_t size, size_t stride, graphics::BufferUsage usage) :
-			m_ID(0u), m_IsMapped(false), m_Size(size), m_Stride(stride), m_Usage(usage), m_Layout(nullptr) {
-			ASSERTM(size > 0 && stride > 0, "[OpenGL] Invalid size or stride for a vertex buffer");
+		OpenGLVertexBuffer::OpenGLVertexBuffer(const void * data, size_t size, graphics::BufferUsage usage) :
+			m_ID(0u), m_IsMapped(false), m_Size(size), m_Usage(usage), m_Layout(nullptr) {
 			ASSERTM(usage != graphics::BufferUsage::STATIC || data, "[OpenGL] Buffer with static usage must be initialized with some data");
 			glCreateBuffers(1, &m_ID);
 			glNamedBufferData(m_ID, size, data, OpenGLHelper::GetOpenGLType(usage));

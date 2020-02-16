@@ -127,10 +127,18 @@ namespace app {
 			glDeleteProgram(m_ID);
 		}
 
-		int OpenGLShaderProgram::GetUniformLocation(const char * name) {
+		int OpenGLShaderProgram::GetUniformBlockLocation(const char * name) {
 			int location = (int)glGetUniformBlockIndex(m_ID, name);
 			if (location < 0) {
-				LOG_ERROR("[OepnGL] Unable to find shader uniform : %s", name);
+				LOG_ERROR("[OepnGL] Unable to find shader uniform block : %s", name);
+			}
+			return location;
+		}
+
+		int OpenGLShaderProgram::GetUniformLocation(const char * uniformName) {
+			int location = (int)glGetUniformLocation(m_ID, uniformName);
+			if (location < 0) {
+				LOG_ERROR("[OepnGL] Unable to find shader uniform : %s", uniformName);
 			}
 			return location;
 		}

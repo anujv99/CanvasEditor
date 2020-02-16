@@ -15,47 +15,50 @@
 
 namespace app { namespace graphics {
 
-    enum class DataType {
-        None,
-        Int, Int2, Int3, Int4,
-        UInt, UInt2, UInt3, UInt4,
-        Float, Float2, Float3, Float4,
-        UByte, UByte2, UByte3, UByte4,
-        Byte, Byte2, Byte3, Byte4,
-        Bool
-    };
+	enum class DataType {
+		None,
+		Int, Int2, Int3, Int4,
+		UInt, UInt2, UInt3, UInt4,
+		Float, Float2, Float3, Float4,
+		UByte, UByte2, UByte3, UByte4,
+		Byte, Byte2, Byte3, Byte4,
+		Bool
+	};
 
-    unsigned int GetSizeBytes(DataType type);
+	unsigned int GetSizeBytes(DataType type);
 
-    struct Entry {
-        std::string Name;
-        DataType Type;
-        unsigned int OffsetBytes;
-        bool Normalize;
+	struct Entry {
+		std::string Name;
+		DataType Type;
+		unsigned int OffsetBytes;
+		bool Normalize;
 
-        unsigned int GetNumElements() const;
-    };
+		unsigned int GetNumElements() const;
+	};
 
-    class BufferLayout final : public utils::HandledObject<BufferLayout> {
-        friend class utils::StrongHandle<BufferLayout>;
-    private:
-        BufferLayout();
-        ~BufferLayout() {}
-    public:
-        void BeginEntries();
-        void AddEntry(DataType type, unsigned int offsetBytes, std::string semanticName, bool normalize = false);
-        void EndEntries();
+	class BufferLayout final : public utils::HandledObject<BufferLayout> {
+		friend class utils::StrongHandle<BufferLayout>;
+	private:
+		BufferLayout();
+		~BufferLayout() {}
+	public:
+		void BeginEntries(int stride = -1);
+		void AddEntry(DataType type, unsigned int offsetBytes, std::string semanticName, bool normalize = false);
+		void EndEntries();
 
-        inline size_t GetNumEntries() const { return m_Entries.size(); }
+		inline size_t GetNumEntries() const { return m_Entries.size(); }
+		inline int GetStride() const { return m_Stride; }
 
-        inline std::vector<Entry>::const_iterator begin() const { return m_Entries.begin(); }
-        inline std::vector<Entry>::const_iterator end() const { return m_Entries.end(); }
-    public:
-        static utils::StrongHandle<BufferLayout> Create();
-    private:
-        std::vector<Entry> m_Entries;
-        bool m_IsConstructing;
-    };
+		inline std::vector<Entry>::const_iterator begin() const { return m_Entries.begin(); }
+		inline std::vector<Entry>::const_iterator end() const { return m_Entries.end(); }
+	public:
+		static utils::StrongHandle<BufferLayout> Create();
+	private:
+		std::vector<Entry> m_Entries;
+		bool m_IsConstructing;
+		int m_Stride;
+		bool m_IsAutoStride;
+	};
 
 } }
 

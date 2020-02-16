@@ -18,7 +18,7 @@ namespace app { namespace external { namespace opengl {
 
     class OpenGLVertexBuffer : public app::graphics::VertexBuffer {
     public:
-        OpenGLVertexBuffer(const void * data, size_t size, size_t stride, graphics::BufferUsage usage);
+        OpenGLVertexBuffer(const void * data, size_t size, graphics::BufferUsage usage);
         ~OpenGLVertexBuffer();
     public:
         virtual void Bind() const override;
@@ -29,12 +29,10 @@ namespace app { namespace external { namespace opengl {
         virtual void SetBufferLayout(utils::StrongHandle<graphics::BufferLayout> & layout) override;
 
         inline virtual utils::StrongHandle<graphics::BufferLayout> GetBufferLayout() const override { return m_Layout; };
-        inline virtual size_t GetStride() const override { return m_Stride; }
         inline virtual size_t GetSize() const override { return m_Size; }
     private:
         GLuint m_ID;
         size_t m_Size;
-        size_t m_Stride;
         utils::StrongHandle<graphics::BufferLayout> m_Layout;
         graphics::BufferUsage m_Usage;
         bool m_IsMapped;

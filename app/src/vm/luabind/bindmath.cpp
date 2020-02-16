@@ -83,7 +83,7 @@ namespace app {
 		static int __index(lua_State * L) {
 			Vec2 * v = (Vec2 *)lua_touserdata(L, 1);
 			LUA_STRING_PARAM(2, c);
-			if (strcmp(c, "type") == 0) { lua_pushnumber(L, LUA_VEC2_TYPE); return 1; }
+			if (strcmp(c, "type") == 0) { lua_pushnumber(L, TypeID::value<Vec2>()); return 1; }
 
 			if (strlen(c) != 1) { LUA_LOG("Vec2 invalid index : %s", c); return 0; }
 
@@ -228,7 +228,7 @@ namespace app {
 		static int __index(lua_State * L) {
 			Vec3 * v = (Vec3 *)lua_touserdata(L, 1);
 			LUA_STRING_PARAM(2, c);
-			if (strcmp(c, "type") == 0) { lua_pushnumber(L, LUA_VEC3_TYPE); return 1; }
+			if (strcmp(c, "type") == 0) { lua_pushnumber(L, TypeID::value<Vec3>()); return 1; }
 
 			if (strlen(c) != 1) { LUA_LOG("Vec3 invalid index : %s", c); return 0; }
 
@@ -384,7 +384,7 @@ namespace app {
 		static int __index(lua_State * L) {
 			Vec4 * v = (Vec4 *)lua_touserdata(L, 1);
 			LUA_STRING_PARAM(2, c);
-			if (strcmp(c, "type") == 0) { lua_pushnumber(L, LUA_VEC4_TYPE); return 1; }
+			if (strcmp(c, "type") == 0) { lua_pushnumber(L, TypeID::value<Vec4>()); return 1; }
 
 			if (strlen(c) != 1) { LUA_LOG("Vec4 invalid index : %s", c); return 0; }
 

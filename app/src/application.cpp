@@ -15,6 +15,7 @@
 
 #include "utils/fileutils.h"
 
+#include "graphics/renderstate.h"
 #include "graphics/framebuffer.h"
 
 namespace app {
@@ -55,7 +56,7 @@ namespace app {
 
 		vm::VM::Ref().Run(utils::FileUtils::ConvertToRelativePath("res/scripts/main.lua").c_str());
 
-		Mat4 projection = Mat4::Ortho(0.0f, core::Window::Ref().GetWidth(), 0.0f, core::Window::Ref().GetHeight(), -1.0f, 1.0f);
+		Mat4 projection = Mat4::Ortho(0.0f, core::Window::Ref().GetWidth(), core::Window::Ref().GetHeight(), 0.0f, -1.0f, 1.0f);
 		math::MVPStack::Ref().Projection().Push(projection);
 
 		fbo = graphics::Framebuffer::Create(
@@ -88,6 +89,8 @@ namespace app {
 
 			imgui::ImGuiManager::Ref().DetectConsumeInputs();
 			imgui::ImGuiManager::Ref().PreUpdate();
+
+			graphics::RenderState::Ref().SetTopology(graphics::Topology::TRIANGLE);
 
 			Update();
 

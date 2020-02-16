@@ -30,7 +30,7 @@ namespace app { namespace renderer {
 		utils::StrongHandle<graphics::BufferLayout> m_Layout;
 		
 		struct Batch : public utils:: HandledObject<Batch> {
-			Batch(size_t bufferSize, size_t stride, utils::StrongHandle<graphics::BufferLayout> layout);
+			Batch(size_t bufferSize, utils::StrongHandle<graphics::BufferLayout> layout);
 
 			utils::StrongHandle<graphics::VertexArray> VAO;
 			utils::StrongHandle<graphics::VertexBuffer> VBO;

@@ -11,7 +11,7 @@ namespace app { namespace renderer {
 		CreateFramebufferObjects();
 
 		m_MVPBuffer = graphics::UniformBuffer::Create(Mat4().GetFloatPtr(), sizeof(Mat4), graphics::BufferUsage::DYNAMIC);
-		m_MVPBuffer->Bind(m_RendererShader->GetUniformLocation("MVP"));
+		m_MVPBuffer->Bind(m_RendererShader->GetUniformBlockLocation("MVP"));
 	}
 
 	Renderer::~Renderer() {}
@@ -40,7 +40,7 @@ namespace app { namespace renderer {
 	}
 
 	void Renderer::CreateRendererObjects() {
-		m_RendererBuffer = VertexBuffer::Create(nullptr, MAX_VERTICES * sizeof(RendererVertex), sizeof(RendererVertex), BufferUsage::DYNAMIC);
+		m_RendererBuffer = VertexBuffer::Create(nullptr, MAX_VERTICES * sizeof(RendererVertex), BufferUsage::DYNAMIC);
 
 		utils::StrongHandle<BufferLayout> layout = BufferLayout::Create();
 		layout->BeginEntries();
@@ -76,7 +76,7 @@ namespace app { namespace renderer {
 			-1.0f, -1.0f, 0.0f, 0.0f,
 		};
 
-		auto fbobuffer = VertexBuffer::Create(vertices, sizeof(vertices), 4 * sizeof(float), BufferUsage::STATIC);
+		auto fbobuffer = VertexBuffer::Create(vertices, sizeof(vertices), BufferUsage::STATIC);
 
 		utils::StrongHandle<BufferLayout>  layout = BufferLayout::Create();
 		layout->BeginEntries();

@@ -65,7 +65,7 @@ namespace app { namespace renderer {
 		StrongHandle<Batch> batch;
 
 		if (it == m_Batches.end()) {
-			batch = new Batch(MAX_VERTICES * sizeof(renderer::Vertex), sizeof(renderer::Vertex), m_Layout);
+			batch = new Batch(MAX_VERTICES * sizeof(renderer::Vertex), m_Layout);
 			m_Batches[topology] = batch;
 		} else {
 			batch = it->second;
@@ -74,10 +74,10 @@ namespace app { namespace renderer {
 		return batch;
 	}
 
-	ImmGFX::Batch::Batch(size_t bufferSize, size_t stride, StrongHandle<BufferLayout> layout) :
+	ImmGFX::Batch::Batch(size_t bufferSize, StrongHandle<BufferLayout> layout) :
 		VBOIndex(0), Data(nullptr) {
-		ASSERT(bufferSize > 0 && stride > 0);
-		VBO = VertexBuffer::Create(nullptr, bufferSize, stride, BufferUsage::DYNAMIC);
+		ASSERT(bufferSize > 0);
+		VBO = VertexBuffer::Create(nullptr, bufferSize, BufferUsage::DYNAMIC);
 		VBO->SetBufferLayout(layout);
 
 		VAO = VertexArray::Create();

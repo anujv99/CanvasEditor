@@ -49,7 +49,10 @@ namespace app { namespace external { namespace opengl {
 
         inline virtual void Bind() override { glUseProgram(m_ID); }
         inline virtual void UnBind() override { glUseProgram(0); }
+        virtual int GetUniformBlockLocation(const char * uniformName) override;
         virtual int GetUniformLocation(const char * uniformName) override;
+
+        inline virtual void SetUniformVec2(int uniformLocation, Vec2 val) override { glUniform2f(uniformLocation, val.x, val.y); }
     private:
         GLuint m_ID;
         utils::StrongHandle<graphics::VertexShader> m_VS;

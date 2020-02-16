@@ -15,7 +15,7 @@
 
 namespace app { namespace graphics {
 
-    class VertexArray : utils::HandledObject<VertexArray> {
+    class VertexArray : public utils::HandledObject<VertexArray> {
         friend class utils::StrongHandle<VertexArray>;
     protected:
         VertexArray() {}

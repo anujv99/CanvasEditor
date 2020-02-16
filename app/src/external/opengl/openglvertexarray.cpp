@@ -44,7 +44,7 @@ namespace app {
 					entry.GetNumElements(),
 					OpenGLHelper::GetOpenGLType(entry.Type),
 					entry.Normalize ? GL_TRUE : GL_FALSE,
-					vertexBuffer->GetStride(),
+					layout->GetStride(),
 					(const void *)entry.OffsetBytes
 				);
 				m_VBOIndex++;

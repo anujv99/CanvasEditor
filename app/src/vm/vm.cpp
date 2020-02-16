@@ -8,6 +8,8 @@
 #include "luabind/bindimguilib.h"
 #include "luabind/bindrendererlib.h"
 #include "luabind/bindmath.h"
+#include "luabind/bindgraphicslib.h"
+#include "luabind/bindcorelib.h"
 
 namespace app { namespace vm {
 
@@ -18,6 +20,8 @@ namespace app { namespace vm {
 		LuaBindImGuiLib(L);
 		LuaBindMath(L);
 		LuaBindRendererLib(L);
+		LuaBindGraphicsLib(L);
+		LuaBindCoreLib(L);
 	}
 
 	VM::~VM() {
