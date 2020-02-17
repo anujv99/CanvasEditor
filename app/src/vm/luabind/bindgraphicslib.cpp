@@ -7,6 +7,8 @@
 #include "graphics/vertexarray.h"
 #include "graphics/framebuffer.h"
 
+#include "renderer/renderer.h"
+
 namespace app {
 
 	using namespace graphics;
@@ -388,11 +390,25 @@ namespace app {
 			return 0;
 		}
 
+		static int Resolve(lua_State * L) {
+			LUA_CHECK_NUM_PARAMS(1);
+			LUA_HANDLED_OBJECT_PARAM(1, Framebuffer, fbo);
+			fbo->Resolve();
+			return 0;
+		}
+
+		static int DrawToScreen(lua_State * L) {
+			LUA_CHECK_NUM_PARAMS(1);
+			LUA_HANDLED_OBJECT_PARAM(1, Framebuffer, fbo);
+			renderer::Renderer::Ref().PassFramebuffer(fbo, nullptr);
+			return 0;
+		}
+
 		static int Create(lua_State * L) {
 			LUA_CHECK_NUM_PARAMS(1);
 			LUA_VEC2_PARAM(1, size);
 			
-			utils::StrongHandle<Framebuffer> fbo = Framebuffer::Create(ToVec2i(*size), TextureFormat::RGBA);
+			utils::StrongHandle<Framebuffer> fbo = Framebuffer::Create(ToVec2i(*size), TextureFormat::RGBA, FBOFlags::MSAA_16X);
 			
 			lua_newtable(L);
 			LUA_SET_HANDLED_OBJECT_HANDLE(fbo);
@@ -408,6 +424,14 @@ namespace app {
 
 			lua_pushstring(L, "Clear");
 			lua_pushcfunction(L, Clear);
+			lua_settable(L, -3);
+
+			lua_pushstring(L, "Resolve");
+			lua_pushcfunction(L, Resolve);
+			lua_settable(L, -3);
+
+			lua_pushstring(L, "DrawToScreen");
+			lua_pushcfunction(L, DrawToScreen);
 			lua_settable(L, -3);
 
 			luaL_getmetatable(L, "LuaFramebufferMetatable");

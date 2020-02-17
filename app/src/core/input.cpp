@@ -14,6 +14,9 @@ namespace app { namespace core {
 	Vec2 Input::m_PrevMousePos								= Vec2(0.0f);
 	Vec2 Input::m_MouseScrollDelta							= Vec2(0.0f);
 
+	double Input::m_RawMousePosX							= 0.0;
+	double Input::m_RawMousePosY							= 0.0;
+
 	std::vector<char> Input::m_CharacterPressedBuffer;
 
 	bool Input::IsKeyDown(unsigned short keyCode) {
@@ -50,6 +53,11 @@ namespace app { namespace core {
 
 	bool Input::IsCharacterPressed() {
 		return !m_CharacterPressedBuffer.empty();
+	}
+
+	Vec2 Input::GetRawMousePos() {
+		Window::Ref().GetRawMousePos(&m_RawMousePosX, &m_RawMousePosY);
+		return Vec2((float)m_RawMousePosX, (float)m_RawMousePosY);
 	}
 
 	void Input::OnEvent(events::Event & e) {

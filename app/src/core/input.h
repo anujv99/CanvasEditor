@@ -10,6 +10,7 @@
 #include <core/events/keyevent.h>
 #include <core/events/mouseevent.h>
 
+#include "window.h"
 #include "keycodes.h" // Contains defines for buttons
 
 #define MAX_KEYS					0xFFF
@@ -39,6 +40,8 @@ namespace app { namespace core {
 
 		static inline const std::vector<char> & GetPressedCharacterBuffer() { return m_CharacterPressedBuffer; }
 
+		static Vec2 GetRawMousePos();
+
 		static inline Vec2 GetMousePosition() { return m_MousePos; }
 		static inline Vec2 GetMouseDeltaPosition() { return m_MousePos - m_PrevMousePos; }
 		static inline Vec2 GetMouseScrollDelta() { return m_MouseScrollDelta; }
@@ -63,6 +66,7 @@ namespace app { namespace core {
 		static Vec2 m_MousePos;
 		static Vec2 m_PrevMousePos;
 		static Vec2 m_MouseScrollDelta;
+		static double m_RawMousePosX, m_RawMousePosY;
 
 		static std::vector<char> m_CharacterPressedBuffer;
 	};

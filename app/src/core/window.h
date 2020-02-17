@@ -32,6 +32,7 @@ namespace app {
 
             virtual unsigned int GetWidth() const = 0;
             virtual unsigned int GetHeight() const = 0;
+            virtual void GetRawMousePos(double * x, double * y) const = 0;
         private:
             static Window * CreateWindow(); // This function should be implemented in order to create a window
         };

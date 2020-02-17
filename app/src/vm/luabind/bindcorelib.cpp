@@ -31,6 +31,13 @@ namespace app {
 			return 1;
 		}
 
+		static int IsMouseKeyDown(lua_State * L) {
+			LUA_CHECK_NUM_PARAMS(1);
+			LUA_INT_PARAM(1, buttonCode);
+			lua_pushboolean(L, Input::IsMouseButtonDown((unsigned short)buttonCode));
+			return 1;
+		}
+
 		static int __index(lua_State * L) {
 			LUA_CHECK_NUM_PARAMS(2);
 			LUA_STRING_PARAM(2, s);
@@ -42,7 +49,11 @@ namespace app {
 				auto pos = Input::GetMouseDeltaPosition();
 				LUA_PUSH_VEC2(pos.x, pos.y);
 				return 1;
-			}  else {
+			} else if (strcmp(s, "RawMousePos") == 0) {
+				auto pos = Input::GetRawMousePos();
+				LUA_PUSH_VEC2(pos.x, pos.y);
+				return 1;
+			} else {
 				LUA_DEBUG_LOG("Invalid index : %s", s);
 			}
 
@@ -53,6 +64,7 @@ namespace app {
 	LUA_LIB_START(Input)
 		LUA_LIB_ENTRY("IsKeyDown", LuaBindInputFunc::IsKeyDown)
 		LUA_LIB_ENTRY("IsKeyPressed", LuaBindInputFunc::IsKeyPressed)
+		LUA_LIB_ENTRY("IsMouseKeyDown", LuaBindInputFunc::IsMouseKeyDown)
 	LUA_LIB_END(Input)
 
 	LUA_METATABLE_START(Input)

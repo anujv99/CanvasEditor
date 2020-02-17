@@ -46,11 +46,15 @@ namespace app {
 
 			glfwSetWindowUserPointer(m_Window, (void *)&m_Data);
 
+			if (glfwRawMouseMotionSupported()) {
+				glfwSetInputMode(m_Window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+			}
+
 			SetCallbacks();
 		}
 
 		void GLFWWindow::Update() {
-			glfwPollEvents();
+			glfwWaitEvents();
 		}
 
 		uintptr_t GLFWWindow::GetRawWindow() {

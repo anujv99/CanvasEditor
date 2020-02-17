@@ -27,6 +27,7 @@ namespace app { namespace external { namespace glfw {
 
         inline virtual unsigned int GetWidth() const override { return m_Data.Width; };
         inline virtual unsigned int GetHeight() const override { return m_Data.Height;  };
+        inline virtual void GetRawMousePos(double * x, double * y) const override { glfwGetCursorPos(m_Window, x, y); };
     private:
         void SetCallbacks();
     private:
