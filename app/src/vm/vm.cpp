@@ -10,10 +10,11 @@
 #include "luabind/bindmath.h"
 #include "luabind/bindgraphicslib.h"
 #include "luabind/bindcorelib.h"
+#include "luabind/bindsystemlib.h"
 
 namespace app { namespace vm {
 
-	VM::VM() : L(nullptr), S(nullptr) {
+	VM::VM() : L(nullptr), m_UpdateFunction(-1), m_RenderFunction(-1), m_RegistryTableIndex(-1), m_GuiFunction(-1) {
 		L = luaL_newstate();
 		luaL_openlibs(L);
 
@@ -22,13 +23,14 @@ namespace app { namespace vm {
 		LuaBindRendererLib(L);
 		LuaBindGraphicsLib(L);
 		LuaBindCoreLib(L);
+		LuaBindSystemLib(L);
 	}
 
 	VM::~VM() {
 		lua_close(L);
 	}
 
-	void VM::Run(const char * mainFile) {
+	void VM::Initialize(const char * mainFile) {
 
 		if (!utils::FileUtils::FileExists(mainFile)) {
 			LOG_ERROR("Failed to find script file : %s", mainFile);
@@ -39,15 +41,52 @@ namespace app { namespace vm {
 			return;
 		}
 
-		lua_getglobal(L, "main_thread");
-		S = lua_tothread(L, -1);
+		lua_getglobal(L, "g_main_thread");
+		ASSERTM(lua_type(L, -1) == LUA_TTABLE, "Invalid script file");
+
+		lua_pushstring(L, "update");
+		lua_gettable(L, -2);
+		ASSERTM(lua_type(L, -1) == LUA_TFUNCTION, "main_thread table should contain update function");
+		m_UpdateFunction = luaL_ref(L, LUA_REGISTRYINDEX);
+
+		lua_pushstring(L, "render");
+		lua_gettable(L, -2);
+		ASSERTM(lua_type(L, -1) == LUA_TFUNCTION, "main_thread table should contain render function");
+		m_RenderFunction = luaL_ref(L, LUA_REGISTRYINDEX);
+
+		lua_pushstring(L, "gui");
+		lua_gettable(L, -2);
+		ASSERTM(lua_type(L, -1) == LUA_TFUNCTION, "main_thread table should contain gui function");
+		m_GuiFunction = luaL_ref(L, LUA_REGISTRYINDEX);
+
 		lua_pop(L, 1);
+
 	}
 
-	void VM::Update() {
-		static int res = 0;
-		int r = lua_resume(S, L, 0, &res);
-		if (r != LUA_OK && r != LUA_YIELD) {
+	void VM::Update(float dt) {
+		lua_rawgeti(L, LUA_REGISTRYINDEX, m_UpdateFunction);
+		lua_getglobal(L, "g_main_thread");
+		lua_pushnumber(L, dt);
+		int err = lua_pcall(L, 2, 0, 0);
+		if (err != LUA_OK) {
+			LOG_ERROR("LUA ERROR : %s", lua_tostring(L, -1));
+		}
+	}
+
+	void VM::Render() {
+		lua_rawgeti(L, LUA_REGISTRYINDEX, m_RenderFunction);
+		lua_getglobal(L, "g_main_thread");
+		int err = lua_pcall(L, 1, 0, 0);
+		if (err != LUA_OK) {
+			LOG_ERROR("LUA ERROR : %s", lua_tostring(L, -1));
+		}
+	}
+
+	void VM::Gui() {
+		lua_rawgeti(L, LUA_REGISTRYINDEX, m_GuiFunction);
+		lua_getglobal(L, "g_main_thread");
+		int err = lua_pcall(L, 1, 0, 0);
+		if (err != LUA_OK) {
 			LOG_ERROR("LUA ERROR : %s", lua_tostring(L, -1));
 		}
 	}

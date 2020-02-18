@@ -54,7 +54,7 @@ namespace app {
 		func.AlphaOperation = graphics::BlendOperation::ADD;
 		graphics::RenderState::Ref().SetBlendFunction(func);
 
-		vm::VM::Ref().Run(utils::FileUtils::ConvertToRelativePath("res/scripts/main.lua").c_str());
+		vm::VM::Ref().Initialize(utils::FileUtils::ConvertToRelativePath("res/scripts/main.lua").c_str());
 
 		Mat4 projection = Mat4::Ortho(0.0f, core::Window::Ref().GetWidth(), core::Window::Ref().GetHeight(), 0.0f, -1.0f, 1.0f);
 		math::MVPStack::Ref().Projection().Push(projection);
@@ -106,8 +106,7 @@ namespace app {
 	}
 
 	void Application::Update() {
-		vm::VM::Ref().Update();
-
+		vm::VM::Ref().Update(core::Timer::GetDeltaTime().GetS());
 		for (auto & l : m_LayerStack) {
 			l->OnUpdate(core::Timer::GetDeltaTime());
 		}
@@ -117,13 +116,14 @@ namespace app {
 		fbo->Bind();
 		fbo->Clear();
 
+		vm::VM::Ref().Render();
+
 		{
 			for (auto & l : m_LayerStack) {
 				l->OnRender();
 			}
 			renderer::ImmGFX::Ref().Render();
 		}
-
 
 		fbo->UnBind();
 		fbo->Resolve();
@@ -134,6 +134,8 @@ namespace app {
 		for (auto & l : m_LayerStack) {
 			l->OnImGuiUpdate();
 		}
+
+		vm::VM::Ref().Gui();
 
 		Mat4 ortho = Mat4::Ortho(0, core::Window::Ref().GetWidth(), 0, core::Window::Ref().GetHeight(), -1, 1);
 		math::MVPStack::Ref().Projection().Push(ortho);

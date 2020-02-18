@@ -25,12 +25,18 @@ namespace app { namespace vm {
         VM();
         ~VM();
     public:
-        void Run(const char * mainFile);
-        void Update();
+        void Initialize(const char * mainFile);
+        void Update(float dt);
+        void Render();
+        void Gui();
         void DoString(const char * str);
         WindowConfig ReadConfigFile(const char * path);
     private:
-        lua_State * L, * S;
+        lua_State * L;
+        int m_UpdateFunction;
+        int m_RenderFunction;
+        int m_GuiFunction;
+        int m_RegistryTableIndex;
     };
 
 } }
