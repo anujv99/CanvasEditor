@@ -87,7 +87,13 @@ namespace app {
 				LOG_WARN("[OpenGL] Resolve is only required while using multisampled fbo");
 				return;
 			}
-			glBlitNamedFramebuffer(m_MSAAFbo, m_ID, 0, 0, m_Size.x, m_Size.y, 0, 0, m_Size.x, m_Size.y, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+			// glBlitNamedFramebuffer not working on some system
+			//glBlitNamedFramebuffer(m_MSAAFbo, m_ID, 0, 0, m_Size.x, m_Size.y, 0, 0, m_Size.x, m_Size.y, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_ID);
+			glBindFramebuffer(GL_READ_FRAMEBUFFER, m_MSAAFbo);
+			glBlitFramebuffer(0, 0, m_Size.x, m_Size.y, 0, 0, m_Size.x, m_Size.y, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+			glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 		}
 
 		void OpenGLFramebuffer::Clear() {
