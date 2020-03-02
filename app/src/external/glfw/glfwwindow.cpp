@@ -67,6 +67,10 @@ namespace app {
 			}
 		}
 
+		void GLFWWindow::ForceWindowUpdate() {
+			glfwPostEmptyEvent();
+		}
+
 		void GLFWWindow::SetCallbacks() {
 			glfwSetWindowCloseCallback(m_Window, [](::GLFWwindow * window) -> void {
 				WindowData * data = (WindowData *)glfwGetWindowUserPointer(window);

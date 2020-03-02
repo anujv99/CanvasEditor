@@ -15,15 +15,15 @@ local create_main_thread = function()
 	function app:init()
 		System.DoFile(app_path)
 		if (g_app_main == nil) then
-			print("Invalid script file %s", app_path)
+			print("Invalid script file ", app_path)
 			return;
 		end
 		if (g_app_main.update == nil) then
-			print("Invalid script file %s", app_path)
+			print("Invalid script file ", app_path)
 			return;
 		end
 		if (g_app_main.render == nil) then
-			print("Invalid script file %s", app_path)
+			print("Invalid script file ", app_path)
 			return;
 		end
 		self.current_program = g_app_main

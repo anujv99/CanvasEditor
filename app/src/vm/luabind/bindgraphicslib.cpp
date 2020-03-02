@@ -53,6 +53,15 @@ namespace app {
 			return 0;
 		}
 
+		static int SetUniformFloat(lua_State * L) {
+			LUA_CHECK_NUM_PARAMS(3);
+			LUA_HANDLED_OBJECT_PARAM(1, ShaderProgram, sp);
+			LUA_STRING_PARAM(2, un);
+			LUA_FLOAT_PARAM(3, val);
+			sp->SetUniformFloat(sp->GetUniformLocation(un), val);
+			return 0;
+		}
+
 		static int Create(lua_State * L) {
 			LUA_CHECK_NUM_PARAMS(2);
 			LUA_STRING_PARAM(1, vsc);
@@ -73,6 +82,10 @@ namespace app {
 
 			lua_pushstring(L, "SetUniformVec2");
 			lua_pushcfunction(L, SetUniformVec2);
+			lua_settable(L, -3);
+
+			lua_pushstring(L, "SetUniformFloat");
+			lua_pushcfunction(L, SetUniformFloat);
 			lua_settable(L, -3);
 
 			luaL_getmetatable(L, "LuaShaderMetatable");

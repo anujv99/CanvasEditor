@@ -1,4 +1,6 @@
 
+System.DoFile("res/apps/paint/rpc_module.lua")
+
 local make_paint = function()
 	
 	local paint = {}
@@ -21,9 +23,9 @@ local make_paint = function()
 
 			out vec4 FragColor;
 
-			uniform vec2 MousePos;
-			uniform vec2 PrevMousePos;
-			uniform vec2 MouseState;
+			uniform vec2 StartPos;
+			uniform vec2 EndPos;
+			uniform float BrushSize;
 
 			float DistanceToLine(vec2 v, vec2 w, vec2 p) {
 				float l2 = pow(length(v - w), 2);
@@ -35,13 +37,13 @@ local make_paint = function()
 			}
 
 			void main() {
-				float dist = DistanceToLine(MousePos, PrevMousePos, gl_FragCoord.xy);
-				if (dist <= MouseState.y && MouseState.x > 0.0f) {
-					FragColor = vec4(1, 1, 0, 1);
+				float dist = DistanceToLine(StartPos, EndPos, gl_FragCoord.xy);
+				if (dist <= BrushSize) {
+					FragColor = vec4(1.0f, 1.0f, 0.0f, 1.0f);
 				} else {
 					discard;
 				}
-			}	
+			}
 		]]
 
 		self.shader = Shader.Create(vertex_shader_code, fragment_shader_code)
@@ -69,34 +71,44 @@ local make_paint = function()
 
 		self.previous_mouse_pos = Vec2.New(Input.RawMousePos.x, 720.0 - Input.RawMousePos.y)
 		self.current_mouse_pos = self.previous_mouse_pos
-		self.mouse_state = Vec2.New(0, 4)
+		self.brush_size = 3.0
+
+		rpc:bind("my_func", function()
+			print("This is my_func")
+		end)
+
+		rpc:bind("draw_line", self.draw, self)
+	end
+
+	paint.draw = function(this, start_x, start_y, end_x, end_y, brush_size)
+		this:draw_line(Vec2.New(start_x, start_y), Vec2.New(end_x, end_y), brush_size)
 	end
 
 	function paint:update(dt)
 		self.previous_mouse_pos = self.current_mouse_pos
 		self.current_mouse_pos = Vec2.New(Input.RawMousePos.x, 720.0 - Input.RawMousePos.y)
+		rpc:update()
+	end
 
-		if (Input.IsMouseKeyDown(Input.MOUSE_BUTTON_LEFT)) then
-			self.mouse_state.x =  1.0
-		else
-			self.mouse_state.x = -1.0
-		end
+	function paint:draw_line(start_pos, end_pos, brush_size)
+		self.framebuffer:Bind()
+		self.shader:Bind()
+		self.vertex_array:Bind()
+
+		self.shader:SetUniformVec2("StartPos", start_pos)
+		self.shader:SetUniformVec2("EndPos", end_pos)
+		self.shader:SetUniformFloat("BrushSize", brush_size)
+
+		self.vertex_array:Draw(6)
+
+		self.framebuffer:UnBind()
+		self.framebuffer:Resolve()
 	end
 
 	function paint:render()
-		if (self.mouse_state.x > 0.0) then
-			self.framebuffer:Bind()
-			self.shader:Bind()
-			self.vertex_array:Bind()
-
-			self.shader:SetUniformVec2("MousePos", self.current_mouse_pos)
-			self.shader:SetUniformVec2("PrevMousePos", self.previous_mouse_pos)
-			self.shader:SetUniformVec2("MouseState", self.mouse_state)
-
-			self.vertex_array:Draw(6)
-
-			self.framebuffer:UnBind()
-			self.framebuffer:Resolve()
+		if (Input.IsMouseKeyDown(Input.MOUSE_BUTTON_LEFT)) then
+			self:draw_line(self.current_mouse_pos, self.previous_mouse_pos, self.brush_size)
+			rpc:call("draw_line", self.current_mouse_pos.x, self.current_mouse_pos.y, self.previous_mouse_pos.x, self.previous_mouse_pos.y, self.brush_size)
 		end
 
 		if (Input.IsKeyDown(Input.KEY_C)) then
@@ -108,12 +120,15 @@ local make_paint = function()
 
 		self.framebuffer:DrawToScreen()
 
-		ImmGFX.DrawCircleWire(self.current_mouse_pos, self.mouse_state.y)
+		ImmGFX.DrawCircleWire(self.current_mouse_pos, self.brush_size)
 	end
 
 	function paint:gui()
 		ImGui.Begin("Props")
-		self.mouse_state.y = ImGui.SliderFloat("Brush Size", self.mouse_state.y, 1.0, 100.0)
+		self.brush_size = ImGui.SliderFloat("Brush Size", self.brush_size, 1.0, 100.0)
+		if (ImGui.Button("Call my_func")) then
+			rpc:call("my_func")
+		end
 		ImGui.End()
 	end
 

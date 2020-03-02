@@ -786,6 +786,27 @@ namespace app {
 		MoveDrawPosNextLine(Vec2i(textWidth, ImGui::FONT_HEIGHT));
 	}
 
+	void ImGui::PrintParagraph(const std::string & str) {
+		if (ImGuiIsMinimized() || str.size() <= 0) return;
+
+		const char * textPos = str.data();
+
+		while (textPos - str.data() < str.size()) {
+			const char * endPos = strchr(textPos, '\n');
+
+			if (endPos == NULL) endPos = str.data() + str.size();
+
+			// copy line
+			char buffer[256];
+			int len = Min((int)(endPos - textPos), (int)sizeof(buffer) - 1);
+			memcpy(buffer, textPos, len);
+			buffer[len] = 0;
+			textPos = endPos + 1;
+
+			ImGui::Print(buffer);
+		}
+	}
+
 	void ImGui::Seperator() {
 		if (ImGuiIsMinimized()) return;
 
@@ -803,6 +824,10 @@ namespace app {
 		ImGuiDrawLine(pos - Vec2i(0, 1), pos - Vec2i(0, 1) + Vec2i(window->Dimen.x - WINDOW_INSIDE_PADDING * 2, 0));
 
 		MoveDrawPosNextLine(Vec2i(1, dimen.y + PADDING * 2 + 1));
+	}
+
+	bool ImGui::Button(const char * name) {
+		return ImGuiButton(name) == BUTTON_PRESS;
 	}
 
 	// Widgets

@@ -31,6 +31,8 @@ namespace app { namespace vm {
         void Gui();
         void DoString(const char * str);
         WindowConfig ReadConfigFile(const char * path);
+
+        inline lua_State * GetState() { return L; }
     private:
         lua_State * L;
         int m_UpdateFunction;

@@ -11,27 +11,25 @@
 #include "luatypes.h"
 #include "bindmath.h"
 
-namespace app {
-
 	struct LuaFunction {
 		const char * Name;
 		int(*Func)(lua_State * L);
 	};
 
-	#define LUA_LIB_START(N) static app::LuaFunction Lua##N##LibEntry[] = {
+	#define LUA_LIB_START(N) static LuaFunction Lua##N##LibEntry[] = {
 	#define LUA_LIB_ENTRY(N, F) { N, F },
 	#define LUA_LIB_END(N) };
 
 	#define LUA_REGISTER_LIB(N)\
 		lua_newtable(L);\
-		for (size_t i = 0; i < std::size(app::Lua##N##LibEntry); i++) {\
-			lua_pushstring(L, app::Lua##N##LibEntry[i].Name);\
-			lua_pushcfunction(L,  app::Lua##N##LibEntry[i].Func);\
+		for (size_t i = 0; i < std::size(Lua##N##LibEntry); i++) {\
+			lua_pushstring(L, Lua##N##LibEntry[i].Name);\
+			lua_pushcfunction(L,  Lua##N##LibEntry[i].Func);\
 			lua_settable(L, -3);\
 		}\
 		lua_setglobal(L, #N);
 
-	#define LUA_METATABLE_START(N) static app::LuaFunction Lua##N##MetatableFunctions[] = {
+	#define LUA_METATABLE_START(N) static LuaFunction Lua##N##MetatableFunctions[] = {
 	#define LUA_METATABLE_FUNCTION(N, F) { N, F },
 	#define LUA_METATBLE_END(N) };
 	
@@ -40,8 +38,8 @@ namespace app {
 			LUA_LOG("No library with name %s found", #N);\
 		} else {\
 			luaL_newmetatable(L, #N "Metatable");\
-			for (size_t i = 0; i < std::size(app::Lua##N##MetatableFunctions); i++) {\
-				lua_pushstring(L, app::Lua##N##MetatableFunctions[i].Name);\
+			for (size_t i = 0; i < std::size(Lua##N##MetatableFunctions); i++) {\
+				lua_pushstring(L, Lua##N##MetatableFunctions[i].Name);\
 				lua_pushcfunction(L, Lua##N##MetatableFunctions[i].Func);\
 				lua_settable(L, -3);\
 			}\
@@ -59,7 +57,7 @@ namespace app {
 										LUA_DEBUG_LOG("Expected %d-%d number of params but got %d", MIN, MAX, lua_gettop(L));\
 									return 0; }
 	
-	#define LUA_FLOAT_PARAM(P, V)	if (lua_type(L, P) != LUA_TNUMBER) { LUA_DEBUG_LOG("Expected integer as parameter at index %d", P); return 0; }\
+	#define LUA_FLOAT_PARAM(P, V)	if (lua_type(L, P) != LUA_TNUMBER) { LUA_DEBUG_LOG("Expected float as parameter at index %d", P); return 0; }\
 									float V = lua_tonumber(L, P)
 
 	#define LUA_INT_PARAM(P, V)		if (lua_type(L, P) != LUA_TNUMBER) { LUA_DEBUG_LOG("Expected integer as parameter at index %d", P); return 0; }\
@@ -107,7 +105,8 @@ namespace app {
 	// ****************************************************************************************************** //
 
 	#define LUA_SET_HANDLED_OBJECT_HANDLE(O) lua_pushstring(L, "handle"); lua_pushlightuserdata(L, O.Get()); lua_settable(L, -3); O->AddRef()
-	#define LUA_SET_CUSTOM_OBJECT_TYPE(T) lua_pushstring(L, "type"); lua_pushinteger(L, TypeID::value<T>()); lua_settable(L, -3)
+	#define LUA_SET_OBJECT_HANDLE(O) lua_pushstring(L, "handle"); lua_pushlightuserdata(L, O); lua_settable(L, -3)
+	#define LUA_SET_CUSTOM_OBJECT_TYPE(T) lua_pushstring(L, "type"); lua_pushinteger(L, app::TypeID::value<T>()); lua_settable(L, -3)
 
 	#define LUA_GENERATE_HANDLED_OBJECT_DESTRUCTOR(O)\
 		LUA_METATABLE_FUNCTION("__gc", [](lua_State * L) -> int {\
@@ -117,7 +116,16 @@ namespace app {
 			if (lua_type(L, -1) != LUA_TLIGHTUSERDATA) { LUA_LOG(#O " handle not set properly"); return 0; }\
 			utils::StrongHandle<O> vb = (O *)lua_touserdata(L, -1);\
 			vb->ReleaseRef();\
-			LUA_LOG(#O);\
+		})
+
+	#define LUA_GENERATE_CUSTOM_OBJECT_DESTRUCTOR(O)\
+		LUA_METATABLE_FUNCTION("__gc", [](lua_State * L) -> int {\
+			LUA_CHECK_NUM_PARAMS(1);\
+			lua_pushstring(L, "handle");\
+			lua_gettable(L, 1);\
+			if (lua_type(L, -1) != LUA_TLIGHTUSERDATA) { LUA_LOG(#O " handle not set properly"); return 0; }\
+			O * vb = (O *)lua_touserdata(L, -1);\
+			delete  vb;\
 		})
 
 	#define LUA_HANDLED_OBJECT_PARAM(P, T, V)\
@@ -131,8 +139,17 @@ namespace app {
 		lua_gettable(L, P);\
 		if (lua_type(L, -1) != LUA_TLIGHTUSERDATA) { LUA_DEBUG_LOG(#T " handle not set properly for object at index %d", P); return 0; }\
 		utils::StrongHandle<T> V = (T *)lua_touserdata(L, -1);
-		
 
-}
+	#define LUA_CUSTOM_OBJECT_PARAM(P, T, V)\
+			LUA_CHECK_TABLE_PARAM(P);\
+			lua_pushstring(L, "type");\
+			lua_gettable(L, P);\
+			if (lua_type(L, -1) != LUA_TNUMBER) { LUA_DEBUG_LOG("Invalid parameter type at index %d", P); }\
+			if (lua_tointeger(L, -1) != app::TypeID::value<T>()) { LUA_DEBUG_LOG("Invalid object type at index %d", P); }\
+			lua_pop(L, 1);\
+			lua_pushstring(L, "handle");\
+			lua_gettable(L, P);\
+			if (lua_type(L, -1) != LUA_TLIGHTUSERDATA) { LUA_DEBUG_LOG(#T " handle not set properly for object at index %d", P); return 0; }\
+			T * V = (T *)lua_touserdata(L, -1);
 
 #endif //__LUA_BIND_H__

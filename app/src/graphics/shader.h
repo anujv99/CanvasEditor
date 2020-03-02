@@ -67,6 +67,7 @@ namespace app { namespace graphics {
 		virtual int GetUniformLocation(const char * uniformName) = 0;
 
 		virtual void SetUniformVec2(int uniformLocation, Vec2 val) = 0;
+		virtual void SetUniformFloat(int uniformLocation, float val) = 0;
 	public:
 		// This function should be implemented in order to create a shader program
 		static utils::StrongHandle<ShaderProgram> Create(utils::StrongHandle<VertexShader> vShader, utils::StrongHandle<FragmentShader> fShader);

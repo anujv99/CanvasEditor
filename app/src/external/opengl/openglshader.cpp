@@ -52,7 +52,6 @@ namespace app {
 
 		OpenGLVertexShader::OpenGLVertexShader(const char * source) : m_ID(0u) {
 			m_ID = CreateAndCompileShader(GL_VERTEX_SHADER, source);
-			LOG_INFO("[OpenGL] Vertex shader successfully created");
 		}
 
 		OpenGLVertexShader::~OpenGLVertexShader() {
@@ -73,7 +72,6 @@ namespace app {
 
 		OpenGLFragmentShader::OpenGLFragmentShader(const char * source) : m_ID(0u) {
 			m_ID = CreateAndCompileShader(GL_FRAGMENT_SHADER, source);
-			LOG_INFO("[OpenGL] Fragment shader successfully created");
 		}
 
 		OpenGLFragmentShader::~OpenGLFragmentShader() {
@@ -120,11 +118,12 @@ namespace app {
 			m_VS = vShader;
 			m_FS = fShader;
 
-			LOG_INFO("[OpenGL] Shader program successfully created");
+			LOG_INFO("[OpenGL] Shader program successfully created. ID = %d", m_ID);
 		}
 
 		OpenGLShaderProgram::~OpenGLShaderProgram() {
 			glDeleteProgram(m_ID);
+			LOG_INFO("[OpenGL] Shader program successfully deleted. ID = %d", m_ID);
 		}
 
 		int OpenGLShaderProgram::GetUniformBlockLocation(const char * name) {

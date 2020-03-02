@@ -99,6 +99,13 @@ namespace app {
 
 			return 0;
 		}
+
+		static int Button(lua_State * L) {
+			LUA_CHECK_NUM_PARAMS(1);
+			LUA_STRING_PARAM(1, name);
+			lua_pushboolean(L, (int)ImGui::Button(name));
+			return 1;
+		}
 	};
 
 	LUA_LIB_START(ImGui)
@@ -111,6 +118,7 @@ namespace app {
 		LUA_LIB_ENTRY("SliderVec3", LuaImGuiFunc::SliderVec3)
 		LUA_LIB_ENTRY("SliderVec4", LuaImGuiFunc::SliderVec4)
 		LUA_LIB_ENTRY("SliderRGB", LuaImGuiFunc::SliderRGB)
+		LUA_LIB_ENTRY("Button", LuaImGuiFunc::Button)
 	LUA_LIB_END(ImGui)
 
 	void LuaBindImGuiLib(lua_State * L) {

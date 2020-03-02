@@ -18,7 +18,10 @@ namespace app {
 
 		static void SameLine();
 		static void Print(const std::string & str);
+		static void PrintParagraph(const std::string & str);
 		static void Seperator();
+
+		static bool Button(const char * name);
 
 		// Widgets
 		static pvfloat SliderFloat(const std::string & name, pvfloat & val, pvfloat min, pvfloat max);
@@ -26,7 +29,6 @@ namespace app {
 		static Vec2 SliderVec2(const std::string & name, Vec2 & val, Vec2 min, Vec2 max);
 		static Vec3 SliderVec3(const std::string & name, Vec3 & val, Vec3 min, Vec3 max);
 		static Vec4 SliderVec4(const std::string & name, Vec4 & val, Vec4 min, Vec4 max);
-
 		static Vec3 SliderRGB(const std::string & name, Vec3 & val);
 
 		static int TextInput(const std::string & name, std::string & val, pvint width);

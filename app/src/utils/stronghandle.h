@@ -3,8 +3,8 @@
  *	A strong handle is a handle to the handled object. Just like a std::shared_ptr
  */
 
-#ifndef __STRING_HANDLE_H__
-#define __STRING_HANDLE_H__
+#ifndef __STRONG_HANDLE_H__
+#define __STRONG_HANDLE_H__
 
 namespace app { namespace utils {
 
@@ -153,4 +153,4 @@ namespace app { namespace utils {
 
 } }
 
-#endif //__STRING_HANDLE_H__
+#endif //__STRONG_HANDLE_H__

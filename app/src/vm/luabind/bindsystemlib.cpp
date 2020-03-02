@@ -12,7 +12,10 @@ namespace app {
 			LUA_STRING_PARAM(1, path);
 			std::string newPath = utils::FileUtils::ConvertToRelativePath(path);
 			if (!utils::FileUtils::FileExists(newPath.c_str())) { LUA_DEBUG_LOG("File does not exists : %s", path); }
-			luaL_dofile(L, newPath.c_str());
+			if (luaL_dofile(L, newPath.c_str()) != LUA_OK) {
+				LUA_DEBUG_LOG("Script Error : %s\n Error : %s", path, lua_tostring(L, -1));
+				lua_pop(L, 1);
+			}
 			return lua_gettop(L) - 1;
 		}
 	};

@@ -53,6 +53,7 @@ namespace app { namespace external { namespace opengl {
         virtual int GetUniformLocation(const char * uniformName) override;
 
         inline virtual void SetUniformVec2(int uniformLocation, Vec2 val) override { glUniform2f(uniformLocation, val.x, val.y); }
+        inline virtual void SetUniformFloat(int uniformLocation, float val) override { glUniform1f(uniformLocation, val); }
     private:
         GLuint m_ID;
         utils::StrongHandle<graphics::VertexShader> m_VS;

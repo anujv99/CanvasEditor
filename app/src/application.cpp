@@ -54,8 +54,6 @@ namespace app {
 		func.AlphaOperation = graphics::BlendOperation::ADD;
 		graphics::RenderState::Ref().SetBlendFunction(func);
 
-		vm::VM::Ref().Initialize(utils::FileUtils::ConvertToRelativePath("res/scripts/main.lua").c_str());
-
 		Mat4 projection = Mat4::Ortho(0.0f, core::Window::Ref().GetWidth(), core::Window::Ref().GetHeight(), 0.0f, -1.0f, 1.0f);
 		math::MVPStack::Ref().Projection().Push(projection);
 
@@ -82,6 +80,8 @@ namespace app {
 
 	void Application::Run() {
 		
+		vm::VM::Ref().Initialize(utils::FileUtils::ConvertToRelativePath("res/scripts/main.lua").c_str());
+
 		while (m_IsRunning) {
 			core::Timer::Update();
 
