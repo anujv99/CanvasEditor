@@ -86,6 +86,8 @@ namespace paint {
 				break;
 			}
 			// --------------
+
+			app::core::Window::Ref().ForceWindowUpdate();
 		}
 		network::Network::Shutdown();
 	}
@@ -138,7 +140,6 @@ namespace paint {
 					}
 				} else
 					lua_pushstring(L, "");
-				app::core::Window::Ref().ForceWindowUpdate();
 				return buff.size() == 0 ? 1 : buff.size();
 			}
 
