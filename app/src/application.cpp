@@ -20,8 +20,6 @@
 
 namespace app {
 
-	static utils::StrongHandle<graphics::Framebuffer> fbo;
-
 	Application::Application() : m_IsRunning(true) {
 		vm::VM::CreateInst();
 
@@ -57,12 +55,7 @@ namespace app {
 		Mat4 projection = Mat4::Ortho(0.0f, core::Window::Ref().GetWidth(), core::Window::Ref().GetHeight(), 0.0f, -1.0f, 1.0f);
 		math::MVPStack::Ref().Projection().Push(projection);
 
-		fbo = graphics::Framebuffer::Create(
-			Vec2i(core::Window::Ref().GetWidth(), core::Window::Ref().GetHeight()),
-			graphics::TextureFormat::RGBA, graphics::FBOFlags::MSAA_16X
-		);
-
-		graphics::RenderState::Ref().SetLineThickness(2.0f);
+		//graphics::RenderState::Ref().SetLineThickness(2.0f);
 	}
 
 	Application::~Application() {
@@ -113,8 +106,6 @@ namespace app {
 	}
 
 	void Application::Render() {
-		fbo->Bind();
-		fbo->Clear();
 
 		vm::VM::Ref().Render();
 
@@ -125,9 +116,6 @@ namespace app {
 			renderer::ImmGFX::Ref().Render();
 		}
 
-		fbo->UnBind();
-		fbo->Resolve();
-		renderer::Renderer::Ref().PassFramebuffer(fbo, nullptr);
 	}
 
 	void Application::Gui() {
