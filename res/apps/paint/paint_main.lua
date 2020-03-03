@@ -77,15 +77,15 @@ local make_paint = function()
 		rpc:bind("clear", self.clear, self)
 	end
 
-	paint.draw = function(this, start_x, start_y, end_x, end_y, brush_size)
-		this:draw_line(Vec2.New(start_x, start_y), Vec2.New(end_x, end_y), brush_size)
+	function paint:draw(start_x, start_y, end_x, end_y, brush_size)
+		self:draw_line(Vec2.New(start_x, start_y), Vec2.New(end_x, end_y), brush_size)
 	end
 	
-	paint.clear = function(this)
-		this.framebuffer:Bind()
-		this.framebuffer:Clear()
-		this.framebuffer:UnBind()
-		this.framebuffer:Resolve()
+	function paint:clear()
+		self.framebuffer:Bind()
+		self.framebuffer:Clear()
+		self.framebuffer:UnBind()
+		self.framebuffer:Resolve()
 	end
 
 	function paint:update(dt)
@@ -116,8 +116,8 @@ local make_paint = function()
 		end
 
 		if (Input.IsKeyDown(Input.KEY_C)) then
-			rpc:call("clear")
 			self.clear(self)
+			rpc:call("clear")
 		end
 
 		self.framebuffer:DrawToScreen()
