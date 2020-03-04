@@ -34,14 +34,14 @@ namespace app { namespace graphics {
 		return 0;
 	}
 
-	BufferLayout::BufferLayout() : m_Entries(), m_IsConstructing(false), m_Stride(0), m_IsAutoStride(false) {}
+	BufferLayout::BufferLayout() : m_Entries(), m_IsConstructing(false), m_Stride(0u), m_IsAutoStride(false) {}
 
 	void BufferLayout::BeginEntries(int stride) {
 		m_IsConstructing = true;
 		if (stride == -1) {
 			m_IsAutoStride = true;
 		} else {
-			m_Stride = stride;
+			m_Stride = (unsigned int)stride;
 			m_IsAutoStride = false;
 		}
 	}

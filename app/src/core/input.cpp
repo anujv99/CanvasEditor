@@ -55,6 +55,13 @@ namespace app { namespace core {
 		return !m_CharacterPressedBuffer.empty();
 	}
 
+	void Input::ConsumeMouseClick(unsigned short keyCode) {
+		if (keyCode < MAX_MOUSE_BUTTONS) {
+			m_MouseButtons[keyCode] = false;
+			m_PrevMouseButtons[keyCode] = false;
+		}
+	}
+
 	Vec2 Input::GetRawMousePos() {
 		Window::Ref().GetRawMousePos(&m_RawMousePosX, &m_RawMousePosY);
 		return Vec2((float)m_RawMousePosX, (float)m_RawMousePosY);

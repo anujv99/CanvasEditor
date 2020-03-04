@@ -23,7 +23,7 @@ namespace app {
 
 		void OpenGLRenderState::SetViewport(graphics::Viewport viewport) {
 			m_Viewport = viewport;
-			glViewport(viewport.TopLeftX, viewport.TopLeftY, viewport.Width, viewport.Height);
+			glViewport((GLint)viewport.TopLeftX, (GLint)viewport.TopLeftY, (GLsizei)viewport.Width, (GLsizei)viewport.Height);
 		}
 
 		void OpenGLRenderState::SetBlendFunction(graphics::BlendFunction func) {

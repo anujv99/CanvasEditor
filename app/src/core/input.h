@@ -38,10 +38,10 @@ namespace app { namespace core {
 
 		static bool IsCharacterPressed();
 
+		static void ConsumeMouseClick(unsigned short keyCode);
+
 		static inline const std::vector<char> & GetPressedCharacterBuffer() { return m_CharacterPressedBuffer; }
-
 		static Vec2 GetRawMousePos();
-
 		static inline Vec2 GetMousePosition() { return m_MousePos; }
 		static inline Vec2 GetMouseDeltaPosition() { return m_MousePos - m_PrevMousePos; }
 		static inline Vec2 GetMouseScrollDelta() { return m_MouseScrollDelta; }

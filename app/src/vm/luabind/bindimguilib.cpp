@@ -50,7 +50,7 @@ namespace app {
 			LUA_INT_PARAM(3, min);
 			LUA_INT_PARAM(4, max);
 
-			lua_pushnumber(L, ImGui::SliderInt(name, val, min, max));
+			lua_pushnumber(L, (lua_Number)ImGui::SliderInt(name, val, min, max));
 			return 1;
 		}
 

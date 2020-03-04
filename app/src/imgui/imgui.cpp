@@ -53,7 +53,7 @@ namespace app {
 	static Vec3 COLOR_WHITE											= Vec3(1.0f);
 	static Vec3 COLOR_BLACK											= Vec3(0.0f);
 
-	static const int ImGui_MOUSE_PRESS_BTN							= MOUSE_BUTTON_LEFT;
+	static const int IMGUI_MOUSE_PRESS_BTN							= MOUSE_BUTTON_LEFT;
 	static const int MOUSEWHEEL_SCROLL_DELTA						= 100;
 
 	enum ButtonState {
@@ -72,7 +72,7 @@ namespace app {
 	static inline utils::StrongHandle<ImGuiWindow> & ImGuiWorkingWindow() { return ImGuiManager::Get()->State.WorkingWindow; }
 	static inline ImGuiManager::ImGuiStateStruct & ImGuiState() { return ImGuiManager::Get()->State; }
 	static inline bool ImGuiIsMinimized() { ASSERT(ImGuiWorkingWindow()); return (ImGuiWorkingWindow()->IsMinimized || ImGuiWorkingWindow()->IsLocked); }
-	static inline int ImGuiTextWidth(const std::string & str) { return ImGui::FONT_WIDTH * str.size(); }
+	static inline int ImGuiTextWidth(const std::string & str) { return ImGui::FONT_WIDTH * (int)str.size(); }
 
 	static inline void ImGuiPrint(const std::string & str, Vec2i pos) {
 		static const Vec2 PADDING = Vec2(0.0f, -5.0f);
@@ -104,15 +104,15 @@ namespace app {
 	}
 
 	static inline Vec2i ImGuiGetMousePos() {
-		return Vec2i(Input::GetMousePosition().x, Window::Ref().GetHeight() - Input::GetMousePosition().y);
+		return Vec2i((prevmath::pvint)Input::GetMousePosition().x, Window::Ref().GetHeight() - (prevmath::pvint)Input::GetMousePosition().y);
 	}
 
 	static inline bool ImGuiDidMouseJustGoUp() {
-		return Input::IsMouseButtonReleased(ImGui_MOUSE_PRESS_BTN);
+		return ImGuiManager::Ref().DidMouseJustGoUp(IMGUI_MOUSE_PRESS_BTN);
 	}
 
 	static inline bool ImGuiDidMouseJustGoDown() {
-		return Input::IsMouseButtonPressed(ImGui_MOUSE_PRESS_BTN);
+		return ImGuiManager::Ref().DidMouseJustGoDown(IMGUI_MOUSE_PRESS_BTN);
 	}
 
 	static inline bool ImGuiDidMouseDoubleClick() {
@@ -149,8 +149,8 @@ namespace app {
 
 	static inline void ImGuiDrawLine(Vec2i start, Vec2i end) {
 		StrongHandle<ImGuiManager::WindowDrawCall> call = ImGuiManager::Get()->GetDrawCall(ImGuiWorkingWindow());
-		call->QuadPos.push_back(Vec2(start.x + (end.x - start.x) / 2.0f, start.y));
-		call->QuadDimen.push_back(Vec2(end.x - start.x, 1.0f));
+		call->QuadPos.push_back(Vec2((prevmath::pvfloat)start.x + ((prevmath::pvfloat)end.x - (prevmath::pvfloat)start.x) / 2.0f, (prevmath::pvfloat)start.y));
+		call->QuadDimen.push_back(Vec2((prevmath::pvfloat)end.x - (prevmath::pvfloat)start.x, 1.0f));
 		call->QuadColor.push_back(ImGuiManager::Ref().m_CurrentColor);
 	}
 
@@ -791,7 +791,7 @@ namespace app {
 
 		const char * textPos = str.data();
 
-		while (textPos - str.data() < str.size()) {
+		while ((size_t)(textPos - str.data()) < str.size()) {
 			const char * endPos = strchr(textPos, '\n');
 
 			if (endPos == NULL) endPos = str.data() + str.size();

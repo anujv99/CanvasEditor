@@ -12,6 +12,8 @@
 #include <utils/singleton.h>
 #include <renderer/font.h>
 #include <math/math.h>
+#include <core/events/event.h>
+#include <core/events/mouseevent.h>
 
 #include "imguiwindow.h"
 
@@ -69,7 +71,10 @@ namespace app { namespace imgui {
 
 		void DetectConsumeInputs();
 		bool DidMouseJustGoDown(int button) const;
+		bool DidMouseJustGoUp(int button) const;
 		bool DidKeyJustGoDown(int keyCode) const;
+
+		void OnEvent(core::events::Event & e);
 
 		utils::StrongHandle<ImGuiWindow> GetWindow(const std::string & name);
 
@@ -80,6 +85,9 @@ namespace app { namespace imgui {
 		void UpdateWindowMap();
 		void DebugPrintVisibleWindow();
 		void DrawWindows();
+
+		bool OnMousePressed(core::events::MouseButtonPressedEvent & e);
+		bool OnMouseReleased(core::events::MouseButtonReleasedEvent & e);
 	private:
 		std::unordered_map<unsigned int, utils::StrongHandle<ImGuiWindow>> m_WindowMap;
 		std::vector<utils::StrongHandle<ImGuiWindow>> m_VisibleWindows;
@@ -89,6 +97,7 @@ namespace app { namespace imgui {
 		float m_FontScale;
 
 		std::set<int> m_ConsumeMouseButtons;
+		std::set<int> m_ConsumeMouseButtonsReleased;
 		std::set<char> m_ConsumeKeyPress;
 	public:
 		//friend void ::app::ImGuiColor(Vec3, float);

@@ -102,11 +102,11 @@ namespace app { namespace renderer {
 		}
 		for (size_t i = 0; i < m_Textures.size(); i++) {
 			if (m_Textures[i] == texture) {
-				return i;
+				return (int)i;
 			}
 		}
 		m_Textures.push_back(texture);
-		return (m_Textures.size() - 1);
+		return ((int)m_Textures.size() - 1);
 	}
 
 
@@ -124,12 +124,12 @@ namespace app { namespace renderer {
 		RenderState::Ref().SetTopology(Topology::TRIANGLE);
 
 		for (size_t i = 0; i < m_Textures.size(); i++) {
-			m_Textures[i]->Bind(i);
+			m_Textures[i]->Bind((unsigned int)i);
 		}
 
 		m_RendererVertexArray->Bind();
 		m_RendererShader->Bind();
-		m_RendererVertexArray->Draw(m_VertexIndex);
+		m_RendererVertexArray->Draw((unsigned int)m_VertexIndex);
 		
 		m_Textures.resize(0);
 

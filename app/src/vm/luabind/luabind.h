@@ -116,6 +116,7 @@
 			if (lua_type(L, -1) != LUA_TLIGHTUSERDATA) { LUA_LOG(#O " handle not set properly"); return 0; }\
 			utils::StrongHandle<O> vb = (O *)lua_touserdata(L, -1);\
 			vb->ReleaseRef();\
+			return 0;\
 		})
 
 	#define LUA_GENERATE_CUSTOM_OBJECT_DESTRUCTOR(O)\
@@ -126,6 +127,7 @@
 			if (lua_type(L, -1) != LUA_TLIGHTUSERDATA) { LUA_LOG(#O " handle not set properly"); return 0; }\
 			O * vb = (O *)lua_touserdata(L, -1);\
 			delete  vb;\
+			return 0;\
 		})
 
 	#define LUA_HANDLED_OBJECT_PARAM(P, T, V)\

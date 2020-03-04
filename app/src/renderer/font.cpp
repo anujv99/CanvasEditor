@@ -10,11 +10,11 @@ namespace app { namespace renderer {
 	static constexpr const unsigned int TEXTURE_SIZE_Y = 1024u;
 
 	float PixelsToPoints(float pixels) {
-		return (unsigned int)(pixels * 0.75f);
+		return (float)(unsigned int)(pixels * 0.75f);
 	}
 
 	float PointsToPixels(float pixels) {
-		return (unsigned int)(pixels * 1.333333333f);
+		return (float)(unsigned int)(pixels * 1.333333333f);
 	}
 
 	Font::Font(const char * file, float points) : m_Points(points) {
@@ -32,8 +32,8 @@ namespace app { namespace renderer {
 			ASSERT(glyph);
 			Character character;
 			character.CharCode = i;
-			character.Offset = Vec2(glyph->offset_x, glyph->offset_y) / pixels;
-			character.Size = Vec2(glyph->width, glyph->height) / pixels;
+			character.Offset = Vec2((prevmath::pvfloat)glyph->offset_x, (prevmath::pvfloat)glyph->offset_y) / pixels;
+			character.Size = Vec2((prevmath::pvfloat)glyph->width, (prevmath::pvfloat)glyph->height) / pixels;
 			character.TexCoordTopLeft = Vec2(glyph->s0, glyph->t0);
 			character.TexCoordBottomRight = Vec2(glyph->s1, glyph->t1 - 0.000001f);
 			character.XAdvance = glyph->advance_x / pixels;

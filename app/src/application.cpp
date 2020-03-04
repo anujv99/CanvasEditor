@@ -52,7 +52,7 @@ namespace app {
 		func.AlphaOperation = graphics::BlendOperation::ADD;
 		graphics::RenderState::Ref().SetBlendFunction(func);
 
-		Mat4 projection = Mat4::Ortho(0.0f, core::Window::Ref().GetWidth(), core::Window::Ref().GetHeight(), 0.0f, -1.0f, 1.0f);
+		Mat4 projection = Mat4::Ortho(0.0f, (float)core::Window::Ref().GetWidth(), (float)core::Window::Ref().GetHeight(), 0.0f, -1.0f, 1.0f);
 		math::MVPStack::Ref().Projection().Push(projection);
 
 		//graphics::RenderState::Ref().SetLineThickness(2.0f);
@@ -80,7 +80,6 @@ namespace app {
 
 			core::GraphicsContext::Ref().BeginFrame();
 
-			imgui::ImGuiManager::Ref().DetectConsumeInputs();
 			imgui::ImGuiManager::Ref().PreUpdate();
 
 			graphics::RenderState::Ref().SetTopology(graphics::Topology::TRIANGLE);
@@ -125,7 +124,7 @@ namespace app {
 
 		vm::VM::Ref().Gui();
 
-		Mat4 ortho = Mat4::Ortho(0, core::Window::Ref().GetWidth(), 0, core::Window::Ref().GetHeight(), -1, 1);
+		Mat4 ortho = Mat4::Ortho(0.0f, (float)core::Window::Ref().GetWidth(), 0.0f, (float)core::Window::Ref().GetHeight(), -1.0f, 1.0f);
 		math::MVPStack::Ref().Projection().Push(ortho);
 
 		renderer::Renderer::Ref().BeginScene();
@@ -138,6 +137,8 @@ namespace app {
 	}
 
 	void Application::OnEvent(core::events::Event & e) {
+		imgui::ImGuiManager::Ref().OnEvent(e);
+
 		core::Input::OnEvent(e);
 
 		core::events::EventDispatcher dispatcher(e);

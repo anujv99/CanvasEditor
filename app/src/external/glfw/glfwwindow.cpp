@@ -137,19 +137,19 @@ namespace app {
 
 			glfwSetCursorPosCallback(m_Window, [](::GLFWwindow * window, double x, double y) -> void {
 				WindowData * data = (WindowData *)glfwGetWindowUserPointer(window);
-				app::core::events::MouseMovedEvent e(x, y);
+				app::core::events::MouseMovedEvent e((float)x, (float)y);
 				data->EventFunc(e);
 			});
 
 			glfwSetScrollCallback(m_Window, [](::GLFWwindow * window, double xOffset, double yOffset) -> void {
 				WindowData * data = (WindowData *)glfwGetWindowUserPointer(window);
-				app::core::events::MouseMovedEvent e(xOffset, yOffset);
+				app::core::events::MouseMovedEvent e((float)xOffset, (float)yOffset);
 				data->EventFunc(e);
 			});
 
 			glfwSetCharCallback(m_Window, [](::GLFWwindow * window, unsigned int character) -> void {
 				WindowData * data = (WindowData *)glfwGetWindowUserPointer(window);  
-				app::core::events::CharacterEvent e(character);
+				app::core::events::CharacterEvent e((char)character);
 				data->EventFunc(e);
 			});
 		}

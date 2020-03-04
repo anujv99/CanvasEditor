@@ -28,8 +28,8 @@ namespace app { namespace imgui {
 		State.MouseRegionStart = Vec2i(0, windowSize.y);
 		State.MouseRegionDimen = windowSize;
 
-		ImGui::FONT_WIDTH = m_Font->GetSize("W").x * m_FontScale;
-		ImGui::FONT_HEIGHT = m_Font->GetSize("W").y * m_FontScale;
+		ImGui::FONT_WIDTH = (int)(m_Font->GetSize("W").x * m_FontScale);
+		ImGui::FONT_HEIGHT = (int)(m_Font->GetSize("W").y * m_FontScale);
 	}
 
 	ImGuiManager::~ImGuiManager() {}
@@ -54,6 +54,7 @@ namespace app { namespace imgui {
 
 		m_ConsumeKeyPress.clear();
 		m_ConsumeMouseButtons.clear();
+		m_ConsumeMouseButtonsReleased.clear();
 	}
 
 	void ImGuiManager::ClearActiveWindow() {
@@ -73,7 +74,7 @@ namespace app { namespace imgui {
 		for (auto & window : m_WindowMap) {
 			pvfloat prevDistFromTop = prevDimen.y - window.second->Pos.y;
 			pvfloat newY = newDimen.y - prevDistFromTop;
-			window.second->Pos.y = newY;
+			window.second->Pos.y = (int)newY;
 		}
 	}
 
@@ -100,7 +101,7 @@ namespace app { namespace imgui {
 		pvint index = -1;
 		for (size_t i = 0; i < m_VisibleWindows.size(); i++) {
 			if (m_VisibleWindows[i] == window) {
-				index = i;
+				index = (int)i;
 				break;
 			}
 		}
@@ -148,55 +149,25 @@ namespace app { namespace imgui {
 	}
 
 	void ImGuiManager::DetectConsumeInputs() {
-		const pvint minMouse = MOUSE_BUTTON_1;
-		const pvint maxMouse = MOUSE_BUTTON_5;
-		const Vec2i mousePos = Vec2i(Input::GetMousePosition().x, Window::Ref().GetHeight() - Input::GetMousePosition().y);
+		
+	}
 
-		bool mouseClicked = false;
-		bool mouseOverAnyWindow = false;
-
-		for (auto & window : m_VisibleWindows) {
-			// Is mouse in
-			const bool mouseInWindow = IsPosInWindow(mousePos, window);
-			mouseOverAnyWindow |= mouseInWindow;
-
-			// Check all mouse button presses if is in
-			for (pvint i = minMouse; i < maxMouse; i++) {
-				if (Input::IsMouseButtonPressed(i)) {
-					mouseClicked = true;
-
-					// If did not click on active window
-					auto activeWindow = State.ActiveWindow;
-					if (activeWindow == nullptr || (mouseInWindow && window != activeWindow && !IsPosInWindow(mousePos, activeWindow))) {
-						SetActiveWindow(window);
-					}
-					if (mouseInWindow) {
-						m_ConsumeMouseButtons.insert(i);
-					}
-				}
-			}
-		}
-
-		// If clicked but missed all windows
-		if (mouseClicked && !mouseOverAnyWindow) {
-			ClearActiveWindow();
-		}
-
-		if (State.DoesWindowConsumeTextInput) {
-			const std::vector<char> & cb = Input::GetPressedCharacterBuffer();
-
-			for (auto & c : cb) {
-				m_ConsumeKeyPress.insert(c);
-			}
-		}
+	bool ImGuiManager::DidMouseJustGoUp(int button) const {
+		return m_ConsumeMouseButtonsReleased.find(button) != m_ConsumeMouseButtonsReleased.end();
 	}
 
 	bool ImGuiManager::DidMouseJustGoDown(pvint button) const {
-		return Input::IsMouseButtonPressed(button);
+		return m_ConsumeMouseButtons.find(button) != m_ConsumeMouseButtons.end();
 	}
 
 	bool ImGuiManager::DidKeyJustGoDown(pvint keyCode) const {
 		return Input::IsKeyPressed(keyCode);
+	}
+
+	void ImGuiManager::OnEvent(core::events::Event & e) {
+		core::events::EventDispatcher dispatcher(e);
+		dispatcher.Dispatch<core::events::MouseButtonPressedEvent>(BIND_EVENT_FN(ImGuiManager::OnMousePressed));
+		dispatcher.Dispatch<core::events::MouseButtonReleasedEvent>(BIND_EVENT_FN(ImGuiManager::OnMouseReleased));
 	}
 
 	StrongHandle<ImGuiWindow> ImGuiManager::GetWindow(const std::string & name) {
@@ -301,6 +272,42 @@ namespace app { namespace imgui {
 			win.second->TextPos.resize(0);
 			win.second->TextColor.resize(0);
 		}
+	}
+
+	bool ImGuiManager::OnMousePressed(core::events::MouseButtonPressedEvent & e) {
+		const Vec2i mousePos = Vec2i((prevmath::pvint)Input::GetMousePosition().x, (prevmath::pvint)(Window::Ref().GetHeight() - Input::GetMousePosition().y));
+
+		bool mouseOverAnyWindow = false;
+		bool isHandled = false;
+
+		for (auto & window : m_VisibleWindows) {
+			// Is mouse in
+			const bool mouseInWindow = IsPosInWindow(mousePos, window);
+			mouseOverAnyWindow |= mouseInWindow;
+
+			// If did not click on active window
+			auto activeWindow = State.ActiveWindow;
+			if (activeWindow == nullptr || (mouseInWindow && window != activeWindow && !IsPosInWindow(mousePos, activeWindow))) {
+				SetActiveWindow(window);
+			}
+			if (mouseInWindow) {
+				m_ConsumeMouseButtons.insert(e.GetMouseButton());
+				isHandled = true;
+			}
+
+		}
+
+		// If clicked but missed all windows
+		if (!mouseOverAnyWindow) {
+			ClearActiveWindow();
+		}
+
+		return isHandled;
+	}
+
+	bool ImGuiManager::OnMouseReleased(core::events::MouseButtonReleasedEvent & e) {
+		m_ConsumeMouseButtonsReleased.insert(e.GetMouseButton());
+		return false;
 	}
 
 	StrongHandle<ImGuiManager::WindowDrawCall> ImGuiManager::GetDrawCall(StrongHandle<ImGuiWindow> window) {

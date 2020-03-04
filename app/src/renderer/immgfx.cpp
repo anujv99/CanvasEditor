@@ -38,7 +38,7 @@ namespace app { namespace renderer {
 			batch.second->VBO->UnMap();
 
 			batch.second->VAO->Bind();
-			batch.second->VAO->Draw(batch.second->VBOIndex);
+			batch.second->VAO->Draw((unsigned int)(batch.second->VBOIndex));
 
 			batch.second->Data = reinterpret_cast<renderer::Vertex *>(batch.second->VBO->Map());
 			batch.second->VBOIndex = 0;

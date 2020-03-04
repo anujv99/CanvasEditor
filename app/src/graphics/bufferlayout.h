@@ -56,7 +56,7 @@ namespace app { namespace graphics {
 	private:
 		std::vector<Entry> m_Entries;
 		bool m_IsConstructing;
-		int m_Stride;
+		unsigned int m_Stride;
 		bool m_IsAutoStride;
 	};
 
