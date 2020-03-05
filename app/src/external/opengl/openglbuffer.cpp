@@ -2,6 +2,8 @@
 
 #ifdef __OPENGL__
 
+#include <utils/assert.h>
+
 namespace app {
 
 	//------------- VERTEX BUFFER -------------
@@ -55,7 +57,12 @@ namespace app {
 		void OpenGLVertexBuffer::UnMap() {
 			ASSERTM(m_IsMapped == true, "[OpenGL] Buffer not mapped. Use Map before calling UnMap");
 
-			ASSERTM(glUnmapNamedBuffer(m_ID) == GL_TRUE, "[OpenGL] Failed to UnMap buffer");
+			#ifdef __WINDOWS__
+				ASSERTM(glUnmapNamedBuffer(m_ID) == GL_TRUE, "[OpenGL] Failed to UnMap buffer");
+			#else
+				glUnmapNamedBuffer(m_ID);
+			#endif
+				
 			m_IsMapped = false;
 		}
 

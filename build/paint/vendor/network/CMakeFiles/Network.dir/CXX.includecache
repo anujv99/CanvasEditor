@@ -1,0 +1,42 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../paint/vendor/network/src/common/log.h
+cstdio
+-
+
+../paint/vendor/network/src/common/socket.h
+
+/home/ramji/Desktop/CS525/paint/vendor/network/src/external/unix/unixsocket.cpp
+cstring
+-
+string
+-
+unixsocket.h
+/home/ramji/Desktop/CS525/paint/vendor/network/src/external/unix/unixsocket.h
+common/log.h
+/home/ramji/Desktop/CS525/paint/vendor/network/src/external/unix/common/log.h
+errno.h
+-
+arpa/inet.h
+-
+
+/home/ramji/Desktop/CS525/paint/vendor/network/src/external/unix/unixsocket.h
+sys/socket.h
+-
+sys/types.h
+-
+netdb.h
+-
+netinet/in.h
+-
+netinet/tcp.h
+-
+common/socket.h
+/home/ramji/Desktop/CS525/paint/vendor/network/src/external/unix/common/socket.h
+

@@ -31,6 +31,10 @@ namespace app {
 		void GLFWWindow::Create(unsigned int width, unsigned int height, const char * title) {
 			ASSERTM(glfwInit(), "[GLFW] Failed to initialize GLFW");
 
+			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+ 			glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
 			::GLFWwindow * window = glfwCreateWindow(width, height, title, nullptr, nullptr);
 
 			ASSERTM(window != nullptr, "[GLFW] Failed to create GLFW window");

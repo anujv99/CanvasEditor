@@ -1,0 +1,2 @@
+/usr/bin/ar qc libfreetype-gl.a  CMakeFiles/freetype-gl.dir/platform.c.o CMakeFiles/freetype-gl.dir/texture-atlas.c.o CMakeFiles/freetype-gl.dir/texture-font.c.o CMakeFiles/freetype-gl.dir/vector.c.o CMakeFiles/freetype-gl.dir/utf8-utils.c.o CMakeFiles/freetype-gl.dir/distance-field.c.o CMakeFiles/freetype-gl.dir/edtaa3func.c.o
+/usr/bin/ranlib libfreetype-gl.a

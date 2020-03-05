@@ -42,7 +42,7 @@ namespace network {
 		bool Win32Socket::Init(const char * ip, unsigned short port) {
 			addrinfo hints;
 
-			ZeroMemory(&hints, sizeof(hints));
+			ZeroMemory(&hints, sizeof(hints)); 
 			hints.ai_family = AF_INET;
 			hints.ai_socktype = SOCK_STREAM;
 			hints.ai_protocol = IPPROTO_TCP;
