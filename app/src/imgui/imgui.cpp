@@ -1,5 +1,7 @@
 #include "imgui.h"
 
+#include <cstring>
+
 #include "utils/assert.h"
 #include "core/window.h"
 #include "core/input.h"
