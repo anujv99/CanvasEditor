@@ -74,7 +74,7 @@ namespace paint {
 	void NetworkVM::RecvThread() {
 		network::Network::Initialize();
 		while (m_IsRunning) {
-			char buff[1024];
+			char buff[4096];
 			int bytesRecv = 0;
 			m_Conn->Recv(buff, sizeof(buff), bytesRecv);
 			buff[bytesRecv] = '\0';
@@ -127,20 +127,30 @@ namespace paint {
 			static int Send(lua_State * L) {
 				LUA_CHECK_NUM_PARAMS(1);
 				LUA_STRING_PARAM(1, msg);
-				NetworkVM::Ref().Send(msg);
+				NetworkVM::Ref().Send(msg + std::string("\n"));
 				return 0;
 			}
 
 			static int Recv(lua_State * L) {
 				LUA_CHECK_NUM_PARAMS(0);
 				std::vector<std::string> buff = NetworkVM::Ref().GetInputBuffer();
-				if (buff.size() > 0) {
-					for (auto & str : buff) {
-						lua_pushstring(L, str.c_str());
+
+				int i = 0;
+
+				for (auto & msg : buff) {
+					std::istringstream iss(msg);
+					std::string s;
+					while (std::getline(iss, s)) {
+						lua_pushstring(L, s.c_str());
+						i++;
 					}
-				} else
+				}
+
+				if (buff.size() == 0) {
 					lua_pushstring(L, "");
-				return buff.size() == 0 ? 1 : buff.size();
+				}
+
+				return buff.size() == 0 ? 1 : i;
 			}
 
 			static int IsConnected(lua_State * L) {

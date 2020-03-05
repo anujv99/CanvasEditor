@@ -12,7 +12,6 @@ local make_rpc = function()
 			messages = { Network.Recv() }
 
 			for k, v in pairs(messages) do
-
 				msg = v
 				params = { Network.DeMarshall(msg) }
 				func_name = params[1]

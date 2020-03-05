@@ -1,2 +1,0 @@
-/usr/bin/ar qc libNetwork.a  CMakeFiles/Network.dir/src/external/unix/unixnetwork.cpp.o CMakeFiles/Network.dir/src/external/unix/unixsocket.cpp.o CMakeFiles/Network.dir/src/external/win32/win32network.cpp.o CMakeFiles/Network.dir/src/external/win32/win32socket.cpp.o
-/usr/bin/ranlib libNetwork.a

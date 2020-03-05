@@ -18,10 +18,10 @@ public:
 	void OnImGuiUpdate() override {
 		ImGui::Begin("Network");
 		if (ImGui::Button("Server")) {
-			paint::NetworkVM::Ref().Create("10.3.56.24", 4464, paint::SocketType::SERVER);
+			paint::NetworkVM::Ref().Create("10.2.76.182", 4464, paint::SocketType::SERVER);
 		}
 		if (ImGui::Button("Client")) {
-			paint::NetworkVM::Ref().Create("10.2.76.182", 4464, paint::SocketType::CLIENT);
+			paint::NetworkVM::Ref().Create("10.3.56.24", 4464, paint::SocketType::CLIENT);
 		}
 		ImGui::End();
 	}
