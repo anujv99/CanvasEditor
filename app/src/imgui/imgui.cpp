@@ -928,6 +928,32 @@ namespace app {
 		return val;
 	}
 
+	Vec4 ImGui::SliderRGBA(const std::string & name, Vec4 & val) {
+		if (ImGuiIsMinimized()) return val;
+		ImGuiGenWidgetID();
+
+		Print(name);
+
+		// Draw color block
+
+		SameLine();
+		Vec2i pos = ImGuiState().DrawPos;
+		Vec2i dimen = Vec2i(ImGui::FONT_HEIGHT * 2, ImGui::FONT_HEIGHT);
+		ImGuiColor(val.xyz());
+		ImGuiDrawRect(pos, dimen);
+		MoveDrawPosNextLine(dimen);
+
+		const Vec4 min(0.0f);
+		const Vec4 max(1.0f);
+
+		SliderFloat("", val.x, min.x, max.x);
+		SliderFloat("", val.y, min.y, max.y);
+		SliderFloat("", val.z, min.z, max.z);
+		SliderFloat("", val.w, min.w, max.w);
+
+		return val;
+	}
+
 	int ImGui::TextInput(const std::string & name, std::string & val, int width) {
 
 		const float KEYPRESS_COOLDOWN = 0.4f;

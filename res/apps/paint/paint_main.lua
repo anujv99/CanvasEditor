@@ -26,6 +26,7 @@ local make_paint = function()
 			uniform vec2 StartPos;
 			uniform vec2 EndPos;
 			uniform float BrushSize;
+			uniform vec4 BrushColor;
 
 			float DistanceToLine(vec2 v, vec2 w, vec2 p) {
 				float l2 = pow(length(v - w), 2);
@@ -39,7 +40,7 @@ local make_paint = function()
 			void main() {
 				float dist = DistanceToLine(StartPos, EndPos, gl_FragCoord.xy);
 				if (dist <= BrushSize) {
-					FragColor = vec4(1.0f, 1.0f, 0.0f, 1.0f);
+					FragColor = BrushColor;
 				} else {
 					discard;
 				}
@@ -71,21 +72,21 @@ local make_paint = function()
 
 		self.previous_mouse_pos = Vec2.New(Input.RawMousePos.x, 720.0 - Input.RawMousePos.y)
 		self.current_mouse_pos = self.previous_mouse_pos
-		self.brush_size = 3.0
+		self.brush_size = 1.5
+		self.brush_color = Vec4.New(1.0, 1.0, 0.0, 1.0)
 
 		rpc:bind("draw_line", self.draw, self)
 		rpc:bind("clear", self.clear, self)
 	end
 
-	function paint:draw(start_x, start_y, end_x, end_y, brush_size)
-		self:draw_line(Vec2.New(start_x, start_y), Vec2.New(end_x, end_y), brush_size)
+	function paint:draw(start_x, start_y, end_x, end_y, brush_size, brush_color_x, brush_color_y, brush_color_z, brush_color_w)
+		self:draw_line(Vec2.New(start_x, start_y), Vec2.New(end_x, end_y), brush_size, Vec4.New(brush_color_x, brush_color_y, brush_color_z, brush_color_w))
 	end
 	
 	function paint:clear()
 		self.framebuffer:Bind()
 		self.framebuffer:Clear()
 		self.framebuffer:UnBind()
-		self.framebuffer:Resolve()
 	end
 
 	function paint:update(dt)
@@ -94,7 +95,7 @@ local make_paint = function()
 		rpc:update()
 	end
 
-	function paint:draw_line(start_pos, end_pos, brush_size)
+	function paint:draw_line(start_pos, end_pos, brush_size, brush_color)
 		self.framebuffer:Bind()
 		self.shader:Bind()
 		self.vertex_array:Bind()
@@ -102,17 +103,18 @@ local make_paint = function()
 		self.shader:SetUniformVec2("StartPos", start_pos)
 		self.shader:SetUniformVec2("EndPos", end_pos)
 		self.shader:SetUniformFloat("BrushSize", brush_size)
+		self.shader:SetUniformVec4("BrushColor", brush_color)
 
 		self.vertex_array:Draw(6)
 
 		self.framebuffer:UnBind()
-		self.framebuffer:Resolve()
 	end
 
 	function paint:render()
 		if (Input.IsMouseKeyDown(Input.MOUSE_BUTTON_LEFT)) then
-			self:draw_line(self.current_mouse_pos, self.previous_mouse_pos, self.brush_size)
-			rpc:call("draw_line", self.current_mouse_pos.x, self.current_mouse_pos.y, self.previous_mouse_pos.x, self.previous_mouse_pos.y, self.brush_size)
+			self:draw_line(self.current_mouse_pos, self.previous_mouse_pos, self.brush_size, self.brush_color)
+			rpc:call("draw_line", self.current_mouse_pos.x, self.current_mouse_pos.y,
+				self.previous_mouse_pos.x, self.previous_mouse_pos.y, self.brush_size, self.brush_color.x, self.brush_color.y, self.brush_color.z, self.brush_color.w)
 		end
 
 		if (Input.IsKeyDown(Input.KEY_C)) then
@@ -128,6 +130,7 @@ local make_paint = function()
 	function paint:gui()
 		ImGui.Begin("Props")
 		self.brush_size = ImGui.SliderFloat("Brush Size", self.brush_size, 1.0, 100.0)
+		ImGui.SliderRGBA("Brush Color", self.brush_color)
 		if (ImGui.Button("Call my_func")) then
 			rpc:call("my_func")
 		end

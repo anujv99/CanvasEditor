@@ -53,6 +53,15 @@ namespace app {
 			return 0;
 		}
 
+		static int SetUniformVec4(lua_State * L) {
+			LUA_CHECK_NUM_PARAMS(3);
+			LUA_HANDLED_OBJECT_PARAM(1, ShaderProgram, sp);
+			LUA_STRING_PARAM(2, un);
+			LUA_VEC4_PARAM(3, val);
+			sp->SetUniformVec4(sp->GetUniformLocation(un), *val);
+			return 0;
+		}
+
 		static int SetUniformFloat(lua_State * L) {
 			LUA_CHECK_NUM_PARAMS(3);
 			LUA_HANDLED_OBJECT_PARAM(1, ShaderProgram, sp);
@@ -82,6 +91,10 @@ namespace app {
 
 			lua_pushstring(L, "SetUniformVec2");
 			lua_pushcfunction(L, SetUniformVec2);
+			lua_settable(L, -3);
+
+			lua_pushstring(L, "SetUniformVec4");
+			lua_pushcfunction(L, SetUniformVec4);
 			lua_settable(L, -3);
 
 			lua_pushstring(L, "SetUniformFloat");
@@ -421,7 +434,7 @@ namespace app {
 			LUA_CHECK_NUM_PARAMS(1);
 			LUA_VEC2_PARAM(1, size);
 			
-			utils::StrongHandle<Framebuffer> fbo = Framebuffer::Create(ToVec2i(*size), TextureFormat::RGBA, FBOFlags::MSAA_16X);
+			utils::StrongHandle<Framebuffer> fbo = Framebuffer::Create(ToVec2i(*size), TextureFormat::RGBA);
 			
 			lua_newtable(L);
 			LUA_SET_HANDLED_OBJECT_HANDLE(fbo);

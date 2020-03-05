@@ -55,7 +55,7 @@ namespace app {
 		Mat4 projection = Mat4::Ortho(0.0f, (float)core::Window::Ref().GetWidth(), (float)core::Window::Ref().GetHeight(), 0.0f, -1.0f, 1.0f);
 		math::MVPStack::Ref().Projection().Push(projection);
 
-		//graphics::RenderState::Ref().SetLineThickness(2.0f);
+		//graphics::RenderState::Ref().SetLineThickness(0.0f);
 	}
 
 	Application::~Application() {
@@ -142,14 +142,14 @@ namespace app {
 		core::Input::OnEvent(e);
 
 		core::events::EventDispatcher dispatcher(e);
-
+		 
 		dispatcher.Dispatch<core::events::WindowCloseEvent>(BIND_EVENT_FN(Application::OnWindowClose));
 
 		for (auto & l : m_LayerStack) {
 			l->OnEvent(e);
 		}
 	}
-
+	 
 	bool Application::OnWindowClose(core::events::WindowCloseEvent & e) {
 		m_IsRunning = false;
 		return true;

@@ -30,6 +30,7 @@ namespace app {
 		static Vec3 SliderVec3(const std::string & name, Vec3 & val, Vec3 min, Vec3 max);
 		static Vec4 SliderVec4(const std::string & name, Vec4 & val, Vec4 min, Vec4 max);
 		static Vec3 SliderRGB(const std::string & name, Vec3 & val);
+		static Vec4 SliderRGBA(const std::string & name, Vec4 & val);
 
 		static int TextInput(const std::string & name, std::string & val, pvint width);
 
