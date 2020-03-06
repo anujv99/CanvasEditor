@@ -63,8 +63,20 @@ namespace paint {
 		while (m_IsRunning) {
 			m_Send.wait(lock);
 			if (m_SendBuffer.size() <= 0) continue;
+
 			int bytesSent = 0;
+			size_t messageSize = m_SendBuffer.size();
+
+			m_Conn->Send(&messageSize, sizeof(messageSize), bytesSent);
+			if ((size_t)bytesSent != sizeof(messageSize)) {
+				LOG_ERROR("Failed to send complete message size");
+			}
+
 			m_Conn->Send(m_SendBuffer.c_str(), m_SendBuffer.size(), bytesSent);
+			if ((size_t)bytesSent != messageSize) {
+				LOG_ERROR("Failed to send complete message");
+			}
+
 			m_SendBuffer.resize(0);
 		}
 		
@@ -73,19 +85,32 @@ namespace paint {
 
 	void NetworkVM::RecvThread() {
 		network::Network::Initialize();
-		while (m_IsRunning) {
-			char buff[4096];
-			int bytesRecv = 0;
-			m_Conn->Recv(buff, sizeof(buff), bytesRecv);
-			buff[bytesRecv] = '\0';
-			m_InputBuffer.push_back(std::string(buff));
 
-			// -To Terminate-
-			if (std::string(buff) == CONNECTION_CLOSE_MESSAGE) {
-				m_Conn->Send(CONNECTION_CLOSE_MESSAGE, sizeof(CONNECTION_CLOSE_MESSAGE), bytesRecv);
-				break;
+		while (m_IsRunning) {
+			
+			int bytesReceived = 0;
+			size_t messageSize = 0;
+			m_Conn->Recv((char *)&messageSize, sizeof(messageSize), bytesReceived);
+
+			if ((size_t)bytesReceived != sizeof(messageSize)) {
+				LOG_ERROR("Failed to recv complete message size");
+				continue;
 			}
-			// --------------
+
+			char buff[4096];
+
+			int receivedMessageSize = 0;
+			while (receivedMessageSize != (int)messageSize) {
+				m_Conn->Recv(buff + receivedMessageSize, (int)messageSize - receivedMessageSize, bytesReceived);
+				receivedMessageSize += bytesReceived;
+			}
+
+			buff[messageSize] = '\0';
+
+			{
+				std::lock_guard<std::mutex> lock(m_MTX);
+				m_InputBuffer.push_back(buff);
+			}
 
 			app::core::Window::Ref().ForceWindowUpdate();
 		}
@@ -127,7 +152,7 @@ namespace paint {
 			static int Send(lua_State * L) {
 				LUA_CHECK_NUM_PARAMS(1);
 				LUA_STRING_PARAM(1, msg);
-				NetworkVM::Ref().Send(msg + std::string("\n"));
+				NetworkVM::Ref().Send(msg);
 				return 0;
 			}
 
@@ -135,22 +160,15 @@ namespace paint {
 				LUA_CHECK_NUM_PARAMS(0);
 				std::vector<std::string> buff = NetworkVM::Ref().GetInputBuffer();
 
-				int i = 0;
-
 				for (auto & msg : buff) {
-					std::istringstream iss(msg);
-					std::string s;
-					while (std::getline(iss, s)) {
-						lua_pushstring(L, s.c_str());
-						i++;
-					}
+					lua_pushstring(L, msg.c_str());
 				}
 
 				if (buff.size() == 0) {
 					lua_pushstring(L, "");
 				}
 
-				return buff.size() == 0 ? 1 : i;
+				return buff.size() == 0 ? 1 : buff.size();
 			}
 
 			static int IsConnected(lua_State * L) {
