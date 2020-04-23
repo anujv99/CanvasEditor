@@ -3,6 +3,8 @@
 #include <chrono>
 #include <iostream>
 #include <sstream>
+#include <vector>
+#include <cstdint>
 
 #include <vm/lua.hpp>
 #include <vm/luabind/luabind.h>
@@ -20,7 +22,10 @@ namespace paint {
 
 	NetworkVM::~NetworkVM() {
 		m_IsRunning = false;
-		m_SendBuffer = CONNECTION_CLOSE_MESSAGE;
+
+		m_SendBuffer = new NetworkMessage(sizeof(CONNECTION_CLOSE_MESSAGE));
+		std::memcpy(m_SendBuffer->Buffer, CONNECTION_CLOSE_MESSAGE, sizeof(CONNECTION_CLOSE_MESSAGE));
+
 		m_Send.notify_all();
 		m_Sock.notify_all();
 		m_NT.join();
@@ -62,22 +67,22 @@ namespace paint {
 		
 		while (m_IsRunning) {
 			m_Send.wait(lock);
-			if (m_SendBuffer.size() <= 0) continue;
+			if (m_SendBuffer->Size() <= 0) continue;
 
 			int bytesSent = 0;
-			size_t messageSize = m_SendBuffer.size();
+			std::size_t messageSize = m_SendBuffer->Size();
 
 			m_Conn->Send(&messageSize, sizeof(messageSize), bytesSent);
 			if ((size_t)bytesSent != sizeof(messageSize)) {
 				LOG_ERROR("Failed to send complete message size");
 			}
 
-			m_Conn->Send(m_SendBuffer.c_str(), m_SendBuffer.size(), bytesSent);
+			m_Conn->Send(m_SendBuffer->Buffer, m_SendBuffer->Size(), bytesSent);
 			if ((size_t)bytesSent != messageSize) {
 				LOG_ERROR("Failed to send complete message");
 			}
 
-			m_SendBuffer.resize(0);
+			m_SendBuffer = new NetworkMessage(0);
 		}
 		
 		network::Network::Shutdown();
@@ -97,15 +102,13 @@ namespace paint {
 				continue;
 			}
 
-			char buff[4096];
+			app::utils::StrongHandle<NetworkMessage> buff = new NetworkMessage(messageSize);
 
 			int receivedMessageSize = 0;
 			while (receivedMessageSize != (int)messageSize) {
-				m_Conn->Recv(buff + receivedMessageSize, (int)messageSize - receivedMessageSize, bytesReceived);
+				m_Conn->Recv(buff->Buffer + receivedMessageSize, (int)messageSize - receivedMessageSize, bytesReceived);
 				receivedMessageSize += bytesReceived;
 			}
-
-			buff[messageSize] = '\0';
 
 			{
 				std::lock_guard<std::mutex> lock(m_MTX);
@@ -131,16 +134,20 @@ namespace paint {
 		return m_Conn != nullptr;
 	}
 
-	void NetworkVM::Send(const std::string & msg) {
+	void NetworkVM::Send(const void * msg, std::size_t msgSize) {
+		if (msgSize <= 0) return;
+
 		{
 			std::lock_guard<std::mutex> lock(m_MTX);
-			m_SendBuffer = msg;
+			m_SendBuffer = new NetworkMessage(msgSize);
+			std::memcpy(m_SendBuffer->Buffer, msg, msgSize);
 		}
+
 		m_Send.notify_all();
 	}
 
-	std::vector<std::string> NetworkVM::GetInputBuffer() {
-		if (m_Conn == nullptr) return std::vector<std::string>();
+	std::vector<app::utils::StrongHandle<NetworkMessage>> NetworkVM::GetInputBuffer() {
+		if (m_Conn == nullptr) return std::vector<app::utils::StrongHandle<NetworkMessage>>();
 		std::lock_guard<std::mutex> lock(m_MTX);
 		auto msg =  m_InputBuffer;
 		m_InputBuffer.resize(0);
@@ -151,24 +158,29 @@ namespace paint {
 		struct LuaNetworkLibFunc {
 			static int Send(lua_State * L) {
 				LUA_CHECK_NUM_PARAMS(1);
-				LUA_STRING_PARAM(1, msg);
-				NetworkVM::Ref().Send(msg);
+				if (lua_type(L, 1) == LUA_TSTRING) {
+					LUA_STRING_PARAM(1, msg);
+					NetworkVM::Ref().Send(msg, std::strlen(msg));
+				} else if (lua_type(L, 1) == LUA_TUSERDATA) {
+					void * data = lua_touserdata(L, 1);
+					if (data == nullptr) return 0;
+
+					std::size_t dataSize = lua_rawlen(L, 1);
+					NetworkVM::Ref().Send(data, dataSize);
+				}
 				return 0;
 			}
 
 			static int Recv(lua_State * L) {
 				LUA_CHECK_NUM_PARAMS(0);
-				std::vector<std::string> buff = NetworkVM::Ref().GetInputBuffer();
+				std::vector<app::utils::StrongHandle<NetworkMessage>> messages = NetworkVM::Ref().GetInputBuffer();
 
-				for (auto & msg : buff) {
-					lua_pushstring(L, msg.c_str());
+				for (auto & msg : messages) {
+					void * userData = lua_newuserdata(L, msg->Size());
+					std::memcpy(userData, msg->Buffer, msg->Size());
 				}
 
-				if (buff.size() == 0) {
-					lua_pushstring(L, "");
-				}
-
-				return buff.size() == 0 ? 1 : buff.size();
+				return (int)messages.size();
 			}
 
 			static int IsConnected(lua_State * L) {
@@ -182,50 +194,113 @@ namespace paint {
 					return 0;
 				}
 
-				std::string msg;
+				std::vector<char> buffer;
+				buffer.reserve(4096);
+
+				// Push number of params
+				buffer.push_back((char)lua_gettop(L));
+
 				for (int i = 1; i <= lua_gettop(L); i++) {
-					msg += std::to_string(lua_type(L, i));
-					const char * temp = lua_tostring(L, i);
-					std::string str = temp;
-					msg += str;
-					msg += ";";
+					char type = (char)lua_type(L, i);
+					if (type == LUA_TSTRING) {
+						const char * str = lua_tostring(L, i);
+						uint32_t strSize = (uint32_t)std::strlen(str);
+						if (strSize == 0) continue;
+
+						// Push Type
+						buffer.push_back(type);
+
+						// Push Data Size
+						std::size_t prevSize = buffer.size();
+						buffer.resize(prevSize + sizeof(strSize));
+						std::memcpy(&buffer[prevSize], (void *)(&strSize), sizeof(strSize));
+
+						// Push Data
+						prevSize = buffer.size();
+						buffer.resize(prevSize + strSize);
+						std::memcpy(&buffer[prevSize], str, strSize);
+
+					} else if (type == LUA_TNUMBER) {
+						float number = lua_tonumber(L, i);
+						uint32_t numberSize = sizeof(number);
+
+						// Push Type
+						buffer.push_back(type);
+
+						// Push Data Size
+						std::size_t prevSize = buffer.size();
+						buffer.resize(prevSize + sizeof(numberSize));
+						std::memcpy(&buffer[prevSize], (void *)(&numberSize), sizeof(numberSize));
+
+						// Push Data
+						prevSize = buffer.size();
+						buffer.resize(prevSize + numberSize);
+						std::memcpy(&buffer[prevSize], (void *)(&number), numberSize);
+					}
 				}
-				lua_pushstring(L, msg.c_str());
+
+				void * luaBuffer = lua_newuserdata(L, buffer.size());
+				std::memcpy(luaBuffer, buffer.data(), buffer.size());
+
 				return 1;
 			}
 
 			static int DeMarshall(lua_State * L) {
 				LUA_CHECK_NUM_PARAMS(1);
-				LUA_STRING_PARAM(1, str);
-				std::string msg = str;
-				if (msg.length() <= 0) return 0;
 				
-				std::vector<std::string> strings;
-				std::istringstream f(msg);
-				std::string s;
-				while (std::getline(f, s, ';')) {
-					strings.push_back(s);
-				}
+				char * buffer = (char * )lua_touserdata(L, 1);
+				if (buffer == nullptr) return 0;
 
-				int params = 0;
+				std::size_t bufferSize = lua_rawlen(L, 1);
+				if (bufferSize == 0) return 0;
 
-				for (auto & str : strings) {
-					int type = std::atoi(str.substr(0, 1).c_str());
-					switch (type) {
-					case LUA_TNUMBER:
-						lua_pushnumber(L, std::atof(str.substr(1).c_str()));
-						params++;
-						break;
-					case LUA_TSTRING:
-						lua_pushstring(L, str.substr(1).c_str());
-						params++;
-						break;
-					default:
-						break;
+				std::size_t bufferIndex = 0;
+
+				// Extract number of params
+				char numParams = buffer[bufferIndex++];
+				unsigned int paramsPushed = 0;
+
+				for (std::size_t i = 0; i < (std::size_t)numParams; i++) {
+					// Extract type of param
+					int type = (int)buffer[bufferIndex++];
+
+					if (type == LUA_TSTRING) {
+						// Extract param size
+						uint32_t paramSize = (uint32_t)(buffer[bufferIndex]);
+						bufferIndex += sizeof(paramSize);
+						if (paramSize == 0) continue;
+
+						// Extract params
+						char * stringParam = new char[(std::size_t)paramSize + (std::size_t)1];
+						std::memcpy(stringParam, &buffer[bufferIndex], paramSize);
+						stringParam[paramSize] = '\0';
+						bufferIndex += paramSize;
+
+						// Push param to lua
+						lua_pushstring(L, stringParam);
+						delete[] stringParam;
+
+						// Update params pushed
+						paramsPushed++;
+					} else if (type == LUA_TNUMBER) {
+						// Extract param size
+						uint32_t paramSize = (uint32_t)(buffer[bufferIndex]);
+						bufferIndex += sizeof(paramSize);
+						if (paramSize == 0) continue;
+
+						// Extract params
+						float numberParam = *((float *)&buffer[bufferIndex]);
+						bufferIndex += paramSize;
+
+						// Push param to lua
+						lua_pushnumber(L, numberParam);
+
+						// Update params pushed
+						paramsPushed++;
 					}
 				}
 
-				return params;
+				return paramsPushed;
 			}
 		};
 

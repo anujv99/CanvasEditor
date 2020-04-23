@@ -34,7 +34,7 @@ namespace app { namespace graphics {
 	public:
 		virtual void Bind() = 0;
 		virtual void UnBind() = 0;
-		virtual void Resolve() = 0; // Call this before getting the texture is using msaa
+		virtual void Resolve() = 0; // Call this before getting the texture if using msaa
 		virtual void Clear() = 0;
 		virtual void Clear(Vec4 color) = 0;
 		virtual Vec2i GetSize() const = 0;

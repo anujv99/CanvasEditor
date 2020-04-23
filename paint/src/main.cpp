@@ -12,16 +12,17 @@ using namespace app;
 class TestLayer : public core::Layer {
 public:
 	TestLayer() : Layer("Network Layer") {
+
 	}
 	~TestLayer() {
 	}
 	void OnImGuiUpdate() override {
 		ImGui::Begin("Network");
 		if (ImGui::Button("Server")) {
-			paint::NetworkVM::Ref().Create("10.2.76.182", 4464, paint::SocketType::SERVER);
+			paint::NetworkVM::Ref().Create("192.168.1.105", 4464, paint::SocketType::SERVER);
 		}
 		if (ImGui::Button("Client")) {
-			paint::NetworkVM::Ref().Create("10.2.76.182", 4464, paint::SocketType::CLIENT);
+			paint::NetworkVM::Ref().Create("192.168.1.105", 4464, paint::SocketType::CLIENT);
 		}
 		ImGui::End();
 	}

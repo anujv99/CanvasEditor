@@ -28,7 +28,7 @@ local make_paint = function()
 			uniform float BrushSize;
 			uniform vec4 BrushColor;
 
-			float DistanceToLine(vec2 v, vec2 w, vec2 p) {
+			float DistanceFromLine(vec2 v, vec2 w, vec2 p) {
 				float l2 = pow(length(v - w), 2);
 				if (l2 == 0.0f) { return length(p - v); }
 
@@ -38,7 +38,7 @@ local make_paint = function()
 			}
 
 			void main() {
-				float dist = DistanceToLine(StartPos, EndPos, gl_FragCoord.xy);
+				float dist = DistanceFromLine(StartPos, EndPos, gl_FragCoord.xy);
 				if (dist <= BrushSize) {
 					FragColor = BrushColor;
 				} else {
@@ -68,18 +68,18 @@ local make_paint = function()
 		self.vertex_array = VertexArray.Create()
 		self.vertex_array:AddVertexBuffer(vertex_buffer)
 
-		self.framebuffer = Framebuffer.Create(Vec2.New(1280.0, 720.0))
+		self.framebuffer = Framebuffer.Create(Vec2.New(Config.Width, Config.Height))
 
-		self.previous_mouse_pos = Vec2.New(Input.RawMousePos.x, 720.0 - Input.RawMousePos.y)
+		self.previous_mouse_pos = Vec2.New(Input.RawMousePos.x, Config.Height - Input.RawMousePos.y)
 		self.current_mouse_pos = self.previous_mouse_pos
 		self.brush_size = 1.5
 		self.brush_color = Vec4.New(1.0, 1.0, 0.0, 1.0)
 
-		rpc:bind("draw_line", self.draw, self)
-		rpc:bind("clear", self.clear, self)
+		rpc:bind("draw_line", self.rpc_draw_line, self)		-- To draw line
+		rpc:bind("clear", self.clear, self)					-- To clear screen
 	end
 
-	function paint:draw(start_x, start_y, end_x, end_y, brush_size, brush_color_x, brush_color_y, brush_color_z, brush_color_w)
+	function paint:rpc_draw_line(start_x, start_y, end_x, end_y, brush_size, brush_color_x, brush_color_y, brush_color_z, brush_color_w)
 		self:draw_line(Vec2.New(start_x, start_y), Vec2.New(end_x, end_y), brush_size, Vec4.New(brush_color_x, brush_color_y, brush_color_z, brush_color_w))
 	end
 	
@@ -91,7 +91,7 @@ local make_paint = function()
 
 	function paint:update(dt)
 		self.previous_mouse_pos = self.current_mouse_pos
-		self.current_mouse_pos = Vec2.New(Input.RawMousePos.x, 720.0 - Input.RawMousePos.y)
+		self.current_mouse_pos = Vec2.New(Input.RawMousePos.x, Config.Height - Input.RawMousePos.y)
 		rpc:update()
 	end
 
@@ -131,9 +131,6 @@ local make_paint = function()
 		ImGui.Begin("Props")
 		self.brush_size = ImGui.SliderFloat("Brush Size", self.brush_size, 1.0, 100.0)
 		ImGui.SliderRGBA("Brush Color", self.brush_color)
-		if (ImGui.Button("Call my_func")) then
-			rpc:call("my_func")
-		end
 		ImGui.End()
 	end
 

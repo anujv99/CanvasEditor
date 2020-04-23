@@ -9,6 +9,8 @@
 #include <vector>
 
 #include <utils/singleton.h>
+#include <utils/stronghandle.h>
+#include <utils/handledobject.h>
 #include <common/network.h>
 #include <common/socket.h>
 
@@ -22,6 +24,23 @@ namespace paint {
 		CLIENT,
 	};
 
+	struct NetworkMessage : public app::utils::HandledObject<NetworkMessage> {
+		NetworkMessage(std::size_t bufferSize) : BufferSize(bufferSize), Buffer(nullptr) {
+			Buffer = new char[bufferSize];
+		}
+
+		~NetworkMessage() {
+			if (Buffer) {
+				delete[] Buffer;
+			}
+		}
+
+		std::size_t Size() { return BufferSize; }
+
+		char * Buffer;
+		std::size_t BufferSize;
+	};
+
 	class NetworkVM : public app::utils::Singleton<NetworkVM> {
 		friend class app::utils::Singleton<NetworkVM>;
 	private:
@@ -31,8 +50,8 @@ namespace paint {
 		void Create(const char * ip, unsigned short port, SocketType type);
 		bool IsConnected();
 
-		void Send(const std::string & msg);
-		std::vector<std::string> GetInputBuffer();
+		void Send(const void * msg, std::size_t msgsize);
+		std::vector<app::utils::StrongHandle<NetworkMessage>> GetInputBuffer();
 
 		void LuaBindNetworkLib(lua_State * L);
 	private:
@@ -53,8 +72,8 @@ namespace paint {
 		network::Socket * m_Conn;
 
 		// Buffer
-		std::vector<std::string> m_InputBuffer;
-		std::string m_SendBuffer;
+		std::vector<app::utils::StrongHandle<NetworkMessage>> m_InputBuffer;
+		app::utils::StrongHandle<NetworkMessage> m_SendBuffer;
 	};
 
 }

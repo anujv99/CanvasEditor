@@ -11,7 +11,6 @@ namespace app {
 		lua_settable(L, -3);
 	}
 
-
 	#define SET_KEY_CODE(C) SetKeyCode(L, #C, C)
 
 	using namespace core;
@@ -208,6 +207,12 @@ namespace app {
 
 		}
 	}
+
+	//----------------WINDOW----------------
+
+	struct LuaBindWindowFunc {
+
+	};
 
 	void LuaBindCoreLib(lua_State * L) {
 		LuaBindInputLib(L);
