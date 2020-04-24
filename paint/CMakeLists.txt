@@ -9,6 +9,7 @@ target_include_directories(Paint PRIVATE "vendor/network/src")
 target_include_directories(Paint PRIVATE "../app/src")
 target_include_directories(Paint PUBLIC "../app/vendor/prevmath/include")
 target_include_directories(Paint PUBLIC "../app/vendor/lua")
+target_include_directories(Paint PUBLIC "../app/vendor/imgui")
 
 target_link_libraries(Paint PRIVATE Application)
 target_link_libraries(Paint PRIVATE Network)

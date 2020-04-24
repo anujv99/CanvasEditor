@@ -28,9 +28,9 @@ namespace paint {
 
 		m_Send.notify_all();
 		m_Sock.notify_all();
-		m_NT.join();
-		m_SendT.join();
-		m_RecvT.join();
+		if (m_NT.joinable()) m_NT.join();
+		if (m_SendT.joinable()) m_SendT.join();
+		if (m_RecvT.joinable()) m_RecvT.join();
 		if (m_Conn != nullptr) {
 			delete m_Conn;
 		}
@@ -42,21 +42,50 @@ namespace paint {
 		network::Network::Initialize();
 		m_Sock.wait(lock);
 
+		bool success = true;
+
 		if (m_Type == SocketType::SERVER) {
 			network::Socket * server = network::Socket::Create();
-			server->Init(m_IP.c_str(), m_Port);
-			server->Bind();
-			server->Listen();
-			m_Conn = server->Accept();
+
+			if (success) {
+				success = server->Init(m_IP.c_str(), m_Port);
+			}
+
+			if (success) {
+				success = server->Bind();
+			}
+
+			if (success) {
+				success = server->Listen();
+			}
+
+			if (success) {
+				m_Conn = server->Accept();
+				if (m_Conn == nullptr) {
+					success = false;
+				}
+			}
+			
 			delete server;
+			server = nullptr;
 		} else if (m_Type == SocketType::CLIENT) {
 			m_Conn = network::Socket::Create();
-			m_Conn->Init(m_IP.c_str(), m_Port);
-			m_Conn->Connect();
+			if (success) {
+				success = m_Conn->Init(m_IP.c_str(), m_Port);
+			}
+			if (success) {
+				success = m_Conn->Connect();
+			}
+			if (!success) {
+				delete m_Conn;
+				m_Conn = nullptr;
+			}
 		}
 
-		m_SendT = std::thread(&NetworkVM::SendThread, this);
-		m_RecvT = std::thread(&NetworkVM::RecvThread, this);
+		if (success) {
+			m_SendT = std::thread(&NetworkVM::SendThread, this);
+			m_RecvT = std::thread(&NetworkVM::RecvThread, this);
+		}
 
 		network::Network::Shutdown();
 	}

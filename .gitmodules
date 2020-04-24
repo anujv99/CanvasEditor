@@ -13,3 +13,6 @@
 [submodule "app/vendor/lua"]
 	path = app/vendor/lua
 	url = https://github.com/preversewharf45/lua
+[submodule "app/vendor/imgui"]
+	path = app/vendor/imgui
+	url = https://github.com/preversewharf45/imgui

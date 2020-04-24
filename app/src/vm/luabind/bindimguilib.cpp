@@ -1,7 +1,10 @@
 #include "bindimguilib.h"
 
 #include "luabind.h"
-#include <imgui/imgui.h>
+
+#include <imgui.h>
+#include <misc/cpp/imgui_stdlib.h>
+#include <math/math.h>
 
 namespace app {
 
@@ -9,19 +12,18 @@ namespace app {
 		static int Begin(lua_State * L) {
 			LUA_CHECK_NUM_PARAMS(1);
 			LUA_STRING_PARAM(1, name);
-			ImGui::Begin(name);
+			ImGui::Begin(name, (bool *)0, ImGuiWindowFlags_AlwaysAutoResize);
 			return 0;
 		}
 
 		static int TextInput(lua_State * L) {
-			LUA_CHECK_NUM_PARAMS(3);
+			LUA_CHECK_NUM_PARAMS(2);
 			LUA_STRING_PARAM(1, name);
 			LUA_STRING_PARAM(2, text);
-			LUA_INT_PARAM(3, width);
 
 			std::string str(text);
 
-			ImGui::TextInput(name, str, width);
+			ImGui::InputText(name, &str);
 
 			lua_pushstring(L, str.c_str());
 			return 1;
@@ -39,7 +41,10 @@ namespace app {
 			LUA_FLOAT_PARAM(2, val);
 			LUA_FLOAT_PARAM(3, min);
 			LUA_FLOAT_PARAM(4, max);
-			lua_pushnumber(L, ImGui::SliderFloat(name, val, min, max));
+
+			ImGui::SliderFloat(name, &val, min, max);
+
+			lua_pushnumber(L, val);
 			return 1;
 		}
 
@@ -50,7 +55,9 @@ namespace app {
 			LUA_INT_PARAM(3, min);
 			LUA_INT_PARAM(4, max);
 
-			lua_pushnumber(L, (lua_Number)ImGui::SliderInt(name, val, min, max));
+			ImGui::SliderInt(name, &val, min, max);
+
+			lua_pushnumber(L, (lua_Number)val);
 			return 1;
 		}
 
@@ -58,10 +65,10 @@ namespace app {
 			LUA_CHECK_NUM_PARAMS(4);
 			LUA_STRING_PARAM(1, name);
 			LUA_VEC2_PARAM(2, val);
-			LUA_VEC2_PARAM(3, min);
-			LUA_VEC2_PARAM(4, max);
+			LUA_FLOAT_PARAM(3, min);
+			LUA_FLOAT_PARAM(4, max);
 
-			ImGui::SliderVec2(name, *val, *min, *max);
+			ImGui::SliderFloat2(name, &val->x, min, max);
 
 			return 0;
 		}
@@ -70,10 +77,10 @@ namespace app {
 			LUA_CHECK_NUM_PARAMS(4);
 			LUA_STRING_PARAM(1, name);
 			LUA_VEC3_PARAM(2, val);
-			LUA_VEC3_PARAM(3, min);
-			LUA_VEC3_PARAM(4, max);
+			LUA_FLOAT_PARAM(3, min);
+			LUA_FLOAT_PARAM(4, max);
 
-			ImGui::SliderVec3(name, *val, *min, *max);
+			ImGui::SliderFloat3(name, &val->x, min, max);
 
 			return 0;
 		}
@@ -82,10 +89,10 @@ namespace app {
 			LUA_CHECK_NUM_PARAMS(4);
 			LUA_STRING_PARAM(1, name);
 			LUA_VEC4_PARAM(2, val);
-			LUA_VEC4_PARAM(3, min);
-			LUA_VEC4_PARAM(4, max);
+			LUA_FLOAT_PARAM(3, min);
+			LUA_FLOAT_PARAM(4, max);
 
-			ImGui::SliderVec4(name, *val, *min, *max);
+			ImGui::SliderFloat4(name, &val->x, min, max);
 
 			return 0;
 		}
@@ -95,7 +102,7 @@ namespace app {
 			LUA_STRING_PARAM(1, name);
 			LUA_VEC3_PARAM(2, val);
 
-			ImGui::SliderRGB(name, *val);
+			ImGui::ColorEdit3(name, &val->x);
 
 			return 0;
 		}
@@ -105,7 +112,7 @@ namespace app {
 			LUA_STRING_PARAM(1, name);
 			LUA_VEC4_PARAM(2, val);
 
-			ImGui::SliderRGBA(name, *val);
+			ImGui::ColorEdit4(name, &val->x);
 
 			return 0;
 		}

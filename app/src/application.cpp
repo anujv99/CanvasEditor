@@ -9,7 +9,6 @@
 #include "renderer/immgfx.h"
 
 #include "imgui/imguimanager.h"
-#include "imgui/imgui.h"
 
 #include "vm/vm.h"
 
@@ -52,10 +51,8 @@ namespace app {
 		func.AlphaOperation = graphics::BlendOperation::ADD;
 		graphics::RenderState::Ref().SetBlendFunction(func);
 
-		Mat4 projection = Mat4::Ortho(0.0f, (float)core::Window::Ref().GetWidth(), (float)core::Window::Ref().GetHeight(), 0.0f, -1.0f, 1.0f);
+		Mat4 projection = Mat4::Ortho(0.0f, (float)core::Window::Ref().GetWidth(), 0.0f, (float)core::Window::Ref().GetHeight(), -1.0f, 1.0f);
 		math::MVPStack::Ref().Projection().Push(projection);
-
-		//graphics::RenderState::Ref().SetLineThickness(0.0f);
 	}
 
 	Application::~Application() {
@@ -80,15 +77,17 @@ namespace app {
 
 			core::GraphicsContext::Ref().BeginFrame();
 
-			imgui::ImGuiManager::Ref().PreUpdate();
-
 			graphics::RenderState::Ref().SetTopology(graphics::Topology::TRIANGLE);
+
+			imgui::ImGuiManager::Ref().BeginFrame();
 
 			Update();
 
 			Render();
 
 			Gui();
+
+			imgui::ImGuiManager::Ref().EndFrame();
 
 			core::GraphicsContext::Ref().EndFrame();
 			core::Input::Update();
@@ -106,15 +105,19 @@ namespace app {
 
 	void Application::Render() {
 
+		renderer::Renderer::Ref().BeginScene();
+
 		vm::VM::Ref().Render();
 
 		{
 			for (auto & l : m_LayerStack) {
 				l->OnRender();
 			}
+
 			renderer::ImmGFX::Ref().Render();
 		}
 
+		renderer::Renderer::Ref().EndScene();
 	}
 
 	void Application::Gui() {
@@ -123,22 +126,9 @@ namespace app {
 		}
 
 		vm::VM::Ref().Gui();
-
-		Mat4 ortho = Mat4::Ortho(0.0f, (float)core::Window::Ref().GetWidth(), 0.0f, (float)core::Window::Ref().GetHeight(), -1.0f, 1.0f);
-		math::MVPStack::Ref().Projection().Push(ortho);
-
-		renderer::Renderer::Ref().BeginScene();
-
-		imgui::ImGuiManager::Ref().PostUpdate();
-
-		math::MVPStack::Ref().Projection().Pop();
-
-		renderer::Renderer::Ref().EndScene();
 	}
 
 	void Application::OnEvent(core::events::Event & e) {
-		imgui::ImGuiManager::Ref().OnEvent(e);
-
 		core::Input::OnEvent(e);
 
 		core::events::EventDispatcher dispatcher(e);

@@ -1,6 +1,6 @@
 
 #include <application.h>
-#include <imgui/imgui.h>
+#include <imgui.h>
 #include <renderer/renderer.h>
 #include <network/networkvm.h>
 #include <vm/vm.h>
@@ -19,10 +19,10 @@ public:
 	void OnImGuiUpdate() override {
 		ImGui::Begin("Network");
 		if (ImGui::Button("Server")) {
-			paint::NetworkVM::Ref().Create("192.168.1.105", 4464, paint::SocketType::SERVER);
+			paint::NetworkVM::Ref().Create("19.168.1.105", 645, paint::SocketType::SERVER);
 		}
 		if (ImGui::Button("Client")) {
-			paint::NetworkVM::Ref().Create("192.168.1.105", 4464, paint::SocketType::CLIENT);
+			paint::NetworkVM::Ref().Create("192.168.1.105", 645, paint::SocketType::CLIENT);
 		}
 		ImGui::End();
 	}

@@ -3,6 +3,7 @@ add_subdirectory(vendor/glad)
 add_subdirectory(vendor/freetype)
 add_subdirectory(vendor/freetype-gl)
 add_subdirectory(vendor/lua)
+add_subdirectory(vendor/imgui)
 
 file(GLOB_RECURSE application_source_files "src/*.*")
 
@@ -14,6 +15,7 @@ target_include_directories(Application PRIVATE "vendor/glad/include")
 target_include_directories(Application PRIVATE "vendor/freetype/include")
 target_include_directories(Application PRIVATE "vendor/freetype-gl")
 target_include_directories(Application PRIVATE "vendor/lua")
+target_include_directories(Application PRIVATE "vendor/imgui")
 
 target_include_directories(Application PUBLIC "vendor/prevmath/include")
 
@@ -22,6 +24,7 @@ target_link_libraries(Application PRIVATE glad)
 target_link_libraries(Application PRIVATE freetype)
 target_link_libraries(Application PRIVATE freetype-gl)
 target_link_libraries(Application PRIVATE Lua)
+target_link_libraries(Application PRIVATE imgui)
 
 option(LOGGING "Enable/Disable Logging" TRUE)
 option(ASSERT "Enable/Disable Assers" TRUE)
@@ -58,3 +61,4 @@ else()
 endif()
 
 add_compile_definitions(__OPENGL__)
+add_compile_definitions(__GLFW__)
