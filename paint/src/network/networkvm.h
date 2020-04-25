@@ -54,6 +54,8 @@ namespace paint {
 		std::vector<app::utils::StrongHandle<NetworkMessage>> GetInputBuffer();
 
 		void LuaBindNetworkLib(lua_State * L);
+
+		void Gui();
 	private:
 		void ThreadFunc();
 		void SendThread();
@@ -70,6 +72,7 @@ namespace paint {
 		unsigned short m_Port;
 
 		network::Socket * m_Conn;
+		network::Socket * m_Server;
 
 		// Buffer
 		std::vector<app::utils::StrongHandle<NetworkMessage>> m_InputBuffer;

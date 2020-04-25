@@ -23,6 +23,8 @@ namespace network { namespace win32 {
 		virtual bool Connect() override;
 		virtual bool Send(const void * data, int numBytes, int & bytesSent) override;
 		virtual bool Recv(char * buff, int buffLen, int & bytesRecevied) override;
+		virtual std::string GetIP() const override;
+		virtual unsigned short GetPort() const override;
 	private:
 		SOCKET m_Handle;
 		addrinfo * m_Info;

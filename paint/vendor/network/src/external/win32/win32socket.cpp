@@ -150,6 +150,37 @@ namespace network {
 			return true;
 		}
 
+		std::string Win32Socket::GetIP() const {
+			CHECK_HANDLE();
+
+			sockaddr addr;
+			int size = sizeof(addr);
+			int result = getpeername(m_Handle, &addr, &size);
+			if (result != 0) {
+				LOG("[WinSock] Failed to get connection ip [Error Code : %s]", gai_strerrorA(WSAGetLastError()));
+				return "";
+			} else {
+				char ip[16];
+				inet_ntop(AF_INET, &((sockaddr_in *)&addr)->sin_addr, ip, sizeof(ip));
+				return std::string(ip);
+			}
+
+		}
+
+		unsigned short Win32Socket::GetPort() const {
+			CHECK_HANDLE();
+
+			sockaddr addr;
+			int size = sizeof(addr);
+			int result = getpeername(m_Handle, &addr, &size);
+			if (result != 0) {
+				LOG("[WinSock] Failed to get connection port [Error Code : %s]", gai_strerrorA(WSAGetLastError()));
+				return 0;
+			} else {
+				return ((sockaddr_in *)&addr)->sin_port;
+			}
+		}
+
 	}
 
 }

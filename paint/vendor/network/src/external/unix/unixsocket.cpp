@@ -143,6 +143,40 @@ namespace network {
 			bytesRecevied = received;
 			return true;
 		}
+
+		std::string UnixSocket::GetIP() const {
+			CHECK_HANDLE();
+
+			sockaddr addr;
+			socklen_t size = (socklen_t)sizeof(addr);
+			int result = getpeername(m_Handle, &addr, &size);
+			if (result != 0) {
+				LOG("[UnixSocket] Failed to get connection ip [Error Code : %s]", strerror(errno));
+				return "";
+			} else {
+				char ip[16];
+				inet_ntop(AF_INET, &((sockaddr_in *)&addr)->sin_addr, ip, sizeof(ip));
+				return std::string(ip);
+			}
+
+		}
+
+		unsigned short UnixSocket::GetPort() const {
+			CHECK_HANDLE();
+
+			sockaddr addr;
+			socklen_t size = (socklen_t)sizeof(addr);
+			int result = getpeername(m_Handle, &addr, &size);
+			if (result != 0) {
+				LOG("[UnixSocket] Failed to get connection port [Error Code : %s]", strerror(errno));
+				return 0;
+			} else {
+				char ip[16];
+				inet_ntop(AF_INET, &((sockaddr_in *)&addr)->sin_addr, ip, sizeof(ip));
+				return ((sockaddr_in *)&addr)->sin_port;
+			}
+
+		}
 	}
 
 }

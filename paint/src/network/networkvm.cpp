@@ -9,12 +9,12 @@
 #include <vm/lua.hpp>
 #include <vm/luabind/luabind.h>
 #include <core/window.h>
-
-static constexpr const char CONNECTION_CLOSE_MESSAGE[] = "CLOSE_CONNECTION";
+#include <imgui.h>
+#include <misc/cpp/imgui_stdlib.h>
 
 namespace paint {
 
-	NetworkVM::NetworkVM() : m_IsRunning(true), m_Type(SocketType::INVALID), m_Port(0), m_Conn(nullptr) {
+	NetworkVM::NetworkVM() : m_IsRunning(true), m_Type(SocketType::INVALID), m_Port(0), m_Conn(nullptr), m_Server(nullptr) {
 		network::Network::Initialize();
 		m_NT = std::thread(&NetworkVM::ThreadFunc, this);
 		std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -23,17 +23,23 @@ namespace paint {
 	NetworkVM::~NetworkVM() {
 		m_IsRunning = false;
 
-		m_SendBuffer = new NetworkMessage(sizeof(CONNECTION_CLOSE_MESSAGE));
-		std::memcpy(m_SendBuffer->Buffer, CONNECTION_CLOSE_MESSAGE, sizeof(CONNECTION_CLOSE_MESSAGE));
+		if (m_Server != nullptr) {
+			delete m_Server;
+			m_Server = nullptr;
+		}
 
 		m_Send.notify_all();
 		m_Sock.notify_all();
 		if (m_NT.joinable()) m_NT.join();
 		if (m_SendT.joinable()) m_SendT.join();
-		if (m_RecvT.joinable()) m_RecvT.join();
+
 		if (m_Conn != nullptr) {
 			delete m_Conn;
+			m_Conn = nullptr;
 		}
+
+		if (m_RecvT.joinable()) m_RecvT.join();
+
 		network::Network::Shutdown();
 	}
 
@@ -45,29 +51,31 @@ namespace paint {
 		bool success = true;
 
 		if (m_Type == SocketType::SERVER) {
-			network::Socket * server = network::Socket::Create();
+			m_Server = network::Socket::Create();
 
 			if (success) {
-				success = server->Init(m_IP.c_str(), m_Port);
+				success = m_Server->Init(m_IP.c_str(), m_Port);
 			}
 
 			if (success) {
-				success = server->Bind();
+				success = m_Server->Bind();
 			}
 
 			if (success) {
-				success = server->Listen();
+				success = m_Server->Listen();
 			}
 
 			if (success) {
-				m_Conn = server->Accept();
+				m_Conn = m_Server->Accept();
 				if (m_Conn == nullptr) {
 					success = false;
 				}
 			}
 			
-			delete server;
-			server = nullptr;
+			if (m_Server != nullptr) {
+				delete m_Server;
+				m_Server = nullptr;
+			}
 		} else if (m_Type == SocketType::CLIENT) {
 			m_Conn = network::Socket::Create();
 			if (success) {
@@ -94,8 +102,9 @@ namespace paint {
 		std::unique_lock<std::mutex> lock(m_MTX);
 		network::Network::Initialize();
 		
-		while (m_IsRunning) {
+		while (m_IsRunning && m_Conn != nullptr) {
 			m_Send.wait(lock);
+			if (m_SendBuffer == nullptr) continue;
 			if (m_SendBuffer->Size() <= 0) continue;
 
 			int bytesSent = 0;
@@ -120,7 +129,7 @@ namespace paint {
 	void NetworkVM::RecvThread() {
 		network::Network::Initialize();
 
-		while (m_IsRunning) {
+		while (m_IsRunning && m_Conn != nullptr) {
 			
 			int bytesReceived = 0;
 			size_t messageSize = 0;
@@ -130,6 +139,8 @@ namespace paint {
 				LOG_ERROR("Failed to recv complete message size");
 				continue;
 			}
+
+			if (messageSize == 0) continue;
 
 			app::utils::StrongHandle<NetworkMessage> buff = new NetworkMessage(messageSize);
 
@@ -226,6 +237,12 @@ namespace paint {
 				std::vector<char> buffer;
 				buffer.reserve(4096);
 
+				buffer.push_back('[');
+				buffer.push_back('R');
+				buffer.push_back('P');
+				buffer.push_back('C');
+				buffer.push_back(']');
+
 				// Push number of params
 				buffer.push_back((char)lua_gettop(L));
 
@@ -281,9 +298,16 @@ namespace paint {
 				if (buffer == nullptr) return 0;
 
 				std::size_t bufferSize = lua_rawlen(L, 1);
-				if (bufferSize == 0) return 0;
+				if (bufferSize < 5) return 0;
 
-				std::size_t bufferIndex = 0;
+				char header[6];
+				std::memcpy(header, buffer, 5);
+				header[5] = '\0';
+
+				if (std::string(header) != "[RPC]")
+					return 0;
+
+				std::size_t bufferIndex = 5;
 
 				// Extract number of params
 				char numParams = buffer[bufferIndex++];
@@ -356,6 +380,80 @@ namespace paint {
 		lua_settable(L, -3);
 
 		lua_setglobal(L, "Network");
+	}
+
+	void NetworkVM::Gui() {
+
+		static int inputPort = 7454;
+		static std::string inputIP = "192.168.1.105";
+		bool isConnectionActive = false;
+
+		ImGui::Begin("Network", (bool *)0, ImGuiWindowFlags_AlwaysAutoResize);
+
+		if (m_Conn == nullptr && m_Type == SocketType::INVALID) {
+			ImGui::Text("Status : IDLE");
+		} else if (m_Conn == nullptr && m_Type != SocketType::INVALID && m_Server == nullptr) {
+			ImGui::Text("Status : Disconnected");
+		} else if (m_Conn != nullptr) {
+
+			// Send some data to check weather is connection is active or not
+			size_t messageSize = 0;
+			int bytesSent = 0;
+			isConnectionActive = m_Conn->Send((const void *)&messageSize, sizeof(messageSize), bytesSent);
+
+			if (!isConnectionActive) {
+				std::lock_guard<std::mutex> lock(m_MTX);
+				delete m_Conn;
+				m_Conn = nullptr;
+			} else {
+				ImGui::Text("Status : Connected [IP : %s, Port : %d]", m_Conn->GetIP().c_str(), (int)m_Conn->GetPort());
+			}
+
+		} else if (m_Server != nullptr) {
+			ImGui::Text("Status : Waiting for connection on");
+			ImGui::Text("[IP : %s, Port : %d]", m_IP.c_str(), (int)m_Port);
+		} else {
+			ImGui::Text("Status : Some error has occured, check console");
+		}
+
+		ImGui::Separator();
+
+		if (m_Conn == nullptr && m_Type == SocketType::INVALID) {
+			ImGui::InputText("IP", &inputIP);
+			ImGui::InputInt("Port", &inputPort);
+
+			if (inputPort > 65535 || inputPort < 0) {
+				ImGui::PushStyleColor(0, ImVec4(1, 0, 0, 1));
+				ImGui::Text("Invalid port number, must be within the range [0, 65535]");
+				ImGui::PopStyleColor();
+			}
+
+			if (ImGui::Button("Open Connection")) {
+				Create(inputIP.c_str(), (unsigned short)inputPort, SocketType::SERVER);
+			}
+			if (ImGui::Button("Connect")) {
+				Create(inputIP.c_str(), (unsigned short)inputPort, SocketType::CLIENT);
+			}
+		}
+
+		if (m_Conn != nullptr) {
+			if (ImGui::Button("Disconnect")) {
+				// Probably Unsafe
+				NetworkVM::DestroyInst();
+				NetworkVM::CreateInst();
+			}
+		}
+
+		if (m_Conn == nullptr && m_Type != SocketType::INVALID) {
+			if (ImGui::Button("Restart Connection")) {
+				// Probably Unsafe
+				NetworkVM::DestroyInst();
+				NetworkVM::CreateInst();
+			}
+		}
+
+		ImGui::End();
+
 	}
 
 }

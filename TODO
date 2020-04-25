@@ -1,30 +1,28 @@
 
-[TODO]
-------
+------------------------------[TODO]------------------------------
 
-## HIGH PRIORRRITY ##
----------------------
+[HIGH PRIORRRITY]
 
 * add simple UI to accept or connect
 * add shapes [ellipse, rectangle]
 * add text drawing support
+* implement undo (Ctrl + Z) and redo (Ctrl + R) commands
 * fix window resizing
 * fix a bug which cause the application to crash when both the users are drawing simultaneously
 
-## LOW PRIORRRITY ##
---------------------
+[LOW PRIORITY]
 
 * add unicode support
 * test on more unix based os (macos, openBSD etc.)
 
-## LOWEST PRIORRRITY ##
------------------------
+[LOWEST PRIORITY]
 
 * add support for android and ios
 * add DirectX support
 
-[DONE]
-------
+------------------------------[DONE]------------------------------
+
+
 
 [anuj 24-04-2020]
 * changed custom GUI to ocornut ImGui (https://github.com/ocornut/imgui)
