@@ -151,7 +151,7 @@ namespace network {
 		}
 
 		std::string Win32Socket::GetIP() const {
-			CHECK_HANDLE();
+			if (m_Handle == INVALID_SOCKET) { LOG("[WinSock] Invalid socket handle. Did you forget to call Socket::Init()"); return ""; }
 
 			sockaddr addr;
 			int size = sizeof(addr);
@@ -168,7 +168,7 @@ namespace network {
 		}
 
 		unsigned short Win32Socket::GetPort() const {
-			CHECK_HANDLE();
+			if (m_Handle == INVALID_SOCKET) { LOG("[WinSock] Invalid socket handle. Did you forget to call Socket::Init()"); return 0; }
 
 			sockaddr addr;
 			int size = sizeof(addr);

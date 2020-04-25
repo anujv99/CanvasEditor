@@ -3,7 +3,6 @@
 
 [HIGH PRIORRRITY]
 
-* add simple UI to accept or connect
 * add shapes [ellipse, rectangle]
 * add text drawing support
 * implement undo (Ctrl + Z) and redo (Ctrl + R) commands
@@ -22,7 +21,10 @@
 
 ------------------------------[DONE]------------------------------
 
-
+[anuj 25-04-2020]
+* added simple UI to accept, connect, disconnect, restart connection
+* fixed handle checking for both win32socket and unixsocket
+* fixed a few more bugs (crash during closing application, crash when other user disconnect)
 
 [anuj 24-04-2020]
 * changed custom GUI to ocornut ImGui (https://github.com/ocornut/imgui)

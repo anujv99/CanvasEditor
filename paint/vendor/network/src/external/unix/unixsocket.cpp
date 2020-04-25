@@ -145,7 +145,7 @@ namespace network {
 		}
 
 		std::string UnixSocket::GetIP() const {
-			CHECK_HANDLE();
+			if (m_Handle == INVALID_SOCKET) { LOG("[UnixSocket] Invalid socket handle. Did you forget to call Socket::Init()"); return ""; }
 
 			sockaddr addr;
 			socklen_t size = (socklen_t)sizeof(addr);
@@ -162,7 +162,7 @@ namespace network {
 		}
 
 		unsigned short UnixSocket::GetPort() const {
-			CHECK_HANDLE();
+			if (m_Handle == INVALID_SOCKET) { LOG("[UnixSocket] Invalid socket handle. Did you forget to call Socket::Init()"); return 0; }
 
 			sockaddr addr;
 			socklen_t size = (socklen_t)sizeof(addr);
