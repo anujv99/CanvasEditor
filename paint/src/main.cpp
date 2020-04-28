@@ -5,6 +5,8 @@
 #include <network/networkvm.h>
 #include <vm/vm.h>
 
+#include "paintrenderer.h"
+
 using namespace app;
 
 #include <iostream>
@@ -26,14 +28,16 @@ private:
 int main() {
 	paint::NetworkVM::CreateInst();
 	Application::CreateInst();
+	paint::PaintRenderer::CreateInst();
 
 	paint::NetworkVM::Ref().LuaBindNetworkLib(vm::VM::Ref().GetState());
+	paint::PaintRenderer::Ref().BindLuaLib(vm::VM::Ref().GetState());
 	
 	Application::Ref().PushLayer(new TestLayer());
 	
 	Application::Ref().Run();
 	
+	paint::PaintRenderer::DestroyInst();
 	Application::Ref().DestroyInst();
-
 	paint::NetworkVM::DestroyInst();
 }

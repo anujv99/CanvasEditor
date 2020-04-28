@@ -72,6 +72,8 @@ namespace paint {
 				}
 			}
 			
+			std::this_thread::sleep_for(std::chrono::seconds(1));
+
 			if (m_Server != nullptr) {
 				delete m_Server;
 				m_Server = nullptr;
