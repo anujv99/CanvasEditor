@@ -24,6 +24,8 @@ namespace paint {
 	public:
 		void Clear();
 		void DrawLine(Vec2 pos1, Vec2 pos2, float brushSize, Vec4 color);
+		void DrawCircle(Vec2 pos, float radius, Vec4 color);
+		void DrawRect(Vec2 pos1, Vec2 pos2, Vec4 color);
 		void Render();
 
 		void BindLuaLib(lua_State * L);

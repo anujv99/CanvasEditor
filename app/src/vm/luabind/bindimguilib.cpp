@@ -35,6 +35,12 @@ namespace app {
 			return 0;
 		}
 
+		static int SameLine(lua_State * L) {
+			LUA_CHECK_NUM_PARAMS(0);
+			ImGui::SameLine();
+			return 0;
+		}
+
 		static int SliderFloat(lua_State * L) {
 			LUA_CHECK_NUM_PARAMS(4);
 			LUA_STRING_PARAM(1, name);
@@ -123,11 +129,28 @@ namespace app {
 			lua_pushboolean(L, (int)ImGui::Button(name));
 			return 1;
 		}
+
+		static int Checkbox(lua_State * L) {
+			LUA_CHECK_NUM_PARAMS(2);
+			LUA_STRING_PARAM(1, name);
+			LUA_BOOL_PARAM(2, selected);
+			lua_pushboolean(L, (int)ImGui::Checkbox(name, &selected));
+			return 1;
+		}
+
+		static int RadioButton(lua_State * L) {
+			LUA_CHECK_NUM_PARAMS(2);
+			LUA_STRING_PARAM(1, name);
+			LUA_BOOL_PARAM(2, selected);
+			lua_pushboolean(L, (int)ImGui::RadioButton(name, selected));
+			return 1;
+		}
 	};
 
 	LUA_LIB_START(ImGui)
 		LUA_LIB_ENTRY("Begin", LuaImGuiFunc::Begin)
 		LUA_LIB_ENTRY("End", LuaImGuiFunc::End)
+		LUA_LIB_ENTRY("SameLine", LuaImGuiFunc::SameLine)
 		LUA_LIB_ENTRY("TextInput", LuaImGuiFunc::TextInput)
 		LUA_LIB_ENTRY("SliderFloat", LuaImGuiFunc::SliderFloat)
 		LUA_LIB_ENTRY("SliderInt", LuaImGuiFunc::SliderInt)
@@ -137,6 +160,8 @@ namespace app {
 		LUA_LIB_ENTRY("SliderRGB", LuaImGuiFunc::SliderRGB)
 		LUA_LIB_ENTRY("SliderRGBA", LuaImGuiFunc::SliderRGBA)
 		LUA_LIB_ENTRY("Button", LuaImGuiFunc::Button)
+		LUA_LIB_ENTRY("Checkbox", LuaImGuiFunc::Checkbox)
+		LUA_LIB_ENTRY("RadioButton", LuaImGuiFunc::RadioButton)
 	LUA_LIB_END(ImGui)
 
 	void LuaBindImGuiLib(lua_State * L) {

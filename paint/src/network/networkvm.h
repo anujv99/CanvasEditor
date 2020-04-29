@@ -7,6 +7,7 @@
 #include <condition_variable>
 #include <string>
 #include <vector>
+#include <list>
 
 #include <utils/singleton.h>
 #include <utils/stronghandle.h>
@@ -55,6 +56,7 @@ namespace paint {
 
 		void LuaBindNetworkLib(lua_State * L);
 
+		void Update();
 		void Gui();
 	private:
 		void ThreadFunc();
@@ -76,6 +78,8 @@ namespace paint {
 
 		// Buffer
 		std::vector<app::utils::StrongHandle<NetworkMessage>> m_InputBuffer;
+		std::vector<app::utils::StrongHandle<NetworkMessage>> m_PrevInputBuffer; // Previous Loop Buffer
+		std::list<float> m_LatencyBuffer;
 		app::utils::StrongHandle<NetworkMessage> m_SendBuffer;
 	};
 

@@ -18,6 +18,9 @@ public:
 	}
 	~TestLayer() {
 	}
+	void OnUpdate(core::TimePoint) override {
+		paint::NetworkVM::Ref().Update();
+	}
 	void OnImGuiUpdate() override {
 		paint::NetworkVM::Ref().Gui();
 	}

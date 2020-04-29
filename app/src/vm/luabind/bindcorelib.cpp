@@ -37,6 +37,20 @@ namespace app {
 			return 1;
 		}
 
+		static int IsMouseKeyPressed(lua_State * L) {
+			LUA_CHECK_NUM_PARAMS(1);
+			LUA_INT_PARAM(1, buttonCode);
+			lua_pushboolean(L, Input::IsMouseButtonPressed((unsigned short)buttonCode));
+			return 1;
+		}
+
+		static int IsMouseKeyReleased(lua_State * L) {
+			LUA_CHECK_NUM_PARAMS(1);
+			LUA_INT_PARAM(1, buttonCode);
+			lua_pushboolean(L, Input::IsMouseButtonReleased((unsigned short)buttonCode));
+			return 1;
+		}
+
 		static int __index(lua_State * L) {
 			LUA_CHECK_NUM_PARAMS(2);
 			LUA_STRING_PARAM(2, s);
@@ -64,6 +78,8 @@ namespace app {
 		LUA_LIB_ENTRY("IsKeyDown", LuaBindInputFunc::IsKeyDown)
 		LUA_LIB_ENTRY("IsKeyPressed", LuaBindInputFunc::IsKeyPressed)
 		LUA_LIB_ENTRY("IsMouseKeyDown", LuaBindInputFunc::IsMouseKeyDown)
+		LUA_LIB_ENTRY("IsMouseKeyPressed", LuaBindInputFunc::IsMouseKeyPressed)
+		LUA_LIB_ENTRY("IsMouseKeyReleased", LuaBindInputFunc::IsMouseKeyReleased)
 	LUA_LIB_END(Input)
 
 	LUA_METATABLE_START(Input)

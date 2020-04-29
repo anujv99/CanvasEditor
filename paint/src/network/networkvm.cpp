@@ -5,10 +5,12 @@
 #include <sstream>
 #include <vector>
 #include <cstdint>
+#include <cstring>
 
 #include <vm/lua.hpp>
 #include <vm/luabind/luabind.h>
 #include <core/window.h>
+#include <core/timer.h>
 #include <imgui.h>
 #include <misc/cpp/imgui_stdlib.h>
 
@@ -192,6 +194,7 @@ namespace paint {
 		if (m_Conn == nullptr) return std::vector<app::utils::StrongHandle<NetworkMessage>>();
 		std::lock_guard<std::mutex> lock(m_MTX);
 		auto msg =  m_InputBuffer;
+		m_PrevInputBuffer = m_InputBuffer;
 		m_InputBuffer.resize(0);
 		return msg;
 	}
@@ -384,6 +387,60 @@ namespace paint {
 		lua_setglobal(L, "Network");
 	}
 
+	void NetworkVM::Update() {
+
+		static float prevTime = 0.0f;
+		float currentTime = app::core::Timer::GetTime().GetMS();
+
+		// Latency Check
+		if (m_Conn != nullptr) {
+			static constexpr const char SEND_MESSAGE[] = "LATENCY_SEND";
+			static constexpr const char RECV_MESSAGE[] = "LATENCY_RECV";
+
+			char message[sizeof(SEND_MESSAGE) + sizeof(currentTime)];
+
+			if (currentTime - prevTime > 10) {	// Only send latency packet once per 100 ms
+				// Send a packet with current time
+				memcpy(message, SEND_MESSAGE, sizeof(SEND_MESSAGE));
+				memcpy(message + sizeof(SEND_MESSAGE), &currentTime, sizeof(currentTime));
+
+				// Send the packet
+				Send(message, sizeof(message));
+			}
+
+			// Check if the packed is received
+
+			{
+				for (const auto & msg : m_PrevInputBuffer) {
+					// In this context we are only concerned about the latency check packet
+					// And the sizeof that packet must be equal to sizeof(message)
+					if (msg->BufferSize != sizeof(message)) continue;
+
+					char tag[sizeof(SEND_MESSAGE)];
+					memcpy(tag, msg->Buffer, sizeof(tag));
+
+					if (std::strcmp(tag, SEND_MESSAGE) == 0) {
+						// Sent from another user
+						float singleTripTime = *(float *)(msg->Buffer + sizeof(SEND_MESSAGE));
+
+						memcpy(message, RECV_MESSAGE, sizeof(RECV_MESSAGE));
+						memcpy(message + sizeof(RECV_MESSAGE), &singleTripTime, sizeof(singleTripTime));
+						Send(message, sizeof(message));
+					} else if (std::strcmp(tag, RECV_MESSAGE) == 0) {
+						// Reply of the latency message
+						float roundTripTime = currentTime - *(float *)(msg->Buffer + sizeof(SEND_MESSAGE));
+						if (m_LatencyBuffer.size() >= 100) {
+							m_LatencyBuffer.erase(m_LatencyBuffer.begin());
+						}
+						m_LatencyBuffer.push_back(roundTripTime);
+					}
+				}
+			}
+
+			prevTime = currentTime;
+		}
+	}
+
 	void NetworkVM::Gui() {
 
 		static int inputPort = 7454;
@@ -436,9 +493,29 @@ namespace paint {
 			if (ImGui::Button("Connect")) {
 				Create(inputIP.c_str(), (unsigned short)inputPort, SocketType::CLIENT);
 			}
+
 		}
 
+		static float AVERAGE_LATENCY = 0.0f;
+
 		if (m_Conn != nullptr) {
+			ImGui::PlotLines("Latency Graph", 
+				[](void * data, int index) -> float { 
+					auto latencyBuffer = (std::list<float> *)data;
+					auto it = latencyBuffer->begin();
+					std::advance(it, index);
+
+					AVERAGE_LATENCY += *it;
+
+					return *it;
+				},
+				&m_LatencyBuffer, m_LatencyBuffer.size()
+			);
+
+			AVERAGE_LATENCY /= m_LatencyBuffer.size();
+
+			ImGui::Text("Average Latency %fms", AVERAGE_LATENCY);
+
 			if (ImGui::Button("Disconnect")) {
 				// Probably Unsafe
 				NetworkVM::DestroyInst();

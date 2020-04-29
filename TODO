@@ -3,7 +3,6 @@
 
 [HIGH PRIORRRITY]
 
-* add shapes [ellipse, rectangle]
 * add text drawing support
 * implement undo (Ctrl + Z) and redo (Ctrl + R) commands
 * fix window resizing
@@ -23,6 +22,10 @@
 * add batch rendering system for drawing lines
 
 ------------------------------[DONE]------------------------------
+
+[anuj 29-04-2020]
+* added a few shapes (circle, rectangle)
+* added a latency graph
 
 [anuj 28-04-2020]
 * removed all shader, framebuffer, vertex array, buffer creation code from lua and added it to c++

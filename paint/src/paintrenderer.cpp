@@ -2,6 +2,7 @@
 
 #include <core/window.h>
 #include <renderer/renderer.h>
+#include <renderer/immgfx.h>
 
 #include <vm/lua.hpp>
 #include <vm/luabind/luabind.h>
@@ -105,6 +106,30 @@ namespace paint {
 		m_Framebuffer->UnBind();
 	}
 
+	void PaintRenderer::DrawCircle(Vec2 pos, float radius, Vec4 color) {
+		ImmGFX::Ref().Render(); // Flush any drawings before binding the framebuffer
+
+		m_Framebuffer->Bind();
+
+		ImmGFX::Ref().Color(color);
+		ImmGFX::Ref().DrawCircle(pos, radius);
+		ImmGFX::Ref().Render();
+
+		m_Framebuffer->UnBind();
+	}
+
+	void PaintRenderer::DrawRect(Vec2 pos1, Vec2 pos2, Vec4 color) {
+		ImmGFX::Ref().Render(); // Flush any drawings before binding the framebuffer
+
+		m_Framebuffer->Bind();
+
+		ImmGFX::Ref().Color(color);
+		ImmGFX::Ref().DrawRect(pos1 + (pos2 - pos1) / 2.0f, pos2 - pos1);
+		ImmGFX::Ref().Render();
+
+		m_Framebuffer->UnBind();
+	}
+
 	void PaintRenderer::Render() {
 		Renderer::Ref().PassFramebuffer(m_Framebuffer, nullptr);
 	}
@@ -133,6 +158,26 @@ namespace paint {
 				PaintRenderer::Ref().Clear();
 				return 0;
 			}
+
+			static int DrawCircle(lua_State * L) {
+				LUA_CHECK_NUM_PARAMS(3);
+				LUA_VEC2_PARAM(1, pos);
+				LUA_FLOAT_PARAM(2, radius);
+				LUA_VEC4_PARAM(3, color);
+
+				PaintRenderer::Ref().DrawCircle(*pos, radius, *color);
+				return 0;
+			}
+
+			static int DrawRect(lua_State * L) {
+				LUA_CHECK_NUM_PARAMS(3);
+				LUA_VEC2_PARAM(1, pos1);
+				LUA_VEC2_PARAM(2, pos2);
+				LUA_VEC4_PARAM(3, color);
+
+				PaintRenderer::Ref().DrawRect(*pos1, *pos2, *color);
+				return 0;
+			}
 		};
 
 		lua_newtable(L);
@@ -147,6 +192,14 @@ namespace paint {
 
 		lua_pushstring(L, "Clear");
 		lua_pushcfunction(L, LuaBindLibFunc::Clear);
+		lua_settable(L, -3);
+
+		lua_pushstring(L, "DrawCircle");
+		lua_pushcfunction(L, LuaBindLibFunc::DrawCircle);
+		lua_settable(L, -3);
+
+		lua_pushstring(L, "DrawRect");
+		lua_pushcfunction(L, LuaBindLibFunc::DrawRect);
 		lua_settable(L, -3);
 
 		lua_setglobal(L, "PaintRenderer");
