@@ -79,7 +79,6 @@ namespace paint {
 		m_VertexArray->AddVertexBuffer(buffer);
 
 		Vec2i winSize = Vec2i(Window::Ref().GetWidth(), Window::Ref().GetHeight());
-
 		m_Framebuffer = Framebuffer::Create(winSize, TextureFormat::RGBA);
 	}
 
@@ -132,6 +131,11 @@ namespace paint {
 
 	void PaintRenderer::Render() {
 		Renderer::Ref().PassFramebuffer(m_Framebuffer, nullptr);
+	}
+
+	void PaintRenderer::WindowResized() {
+		Vec2i winSize = Vec2i(Window::Ref().GetWidth(), Window::Ref().GetHeight());
+		m_Framebuffer = Framebuffer::Create(winSize, TextureFormat::RGBA);
 	}
 
 	void PaintRenderer::BindLuaLib(lua_State * L) {

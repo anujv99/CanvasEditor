@@ -85,9 +85,9 @@ namespace app {
 			glfwSetWindowSizeCallback(m_Window, [](::GLFWwindow * window, int width, int height) -> void {
 				WindowData * data = (WindowData *)glfwGetWindowUserPointer(window);
 				app::core::events::WindowResizeEvent e(width, height);
-				data->EventFunc(e);
 				data->Width = e.GetWindowSizeX();
 				data->Height = e.GetWindowSizeY();
+				data->EventFunc(e);
 			});
 
 			glfwSetWindowPosCallback(m_Window, [](::GLFWwindow * window, int x, int y) -> void {

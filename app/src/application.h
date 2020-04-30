@@ -32,6 +32,7 @@ namespace app {
 
 		void OnEvent(core::events::Event & e);
 		bool OnWindowClose(core::events::WindowCloseEvent & e);
+		bool OnWindowResize(core::events::WindowResizeEvent & e);
 	private:
 		bool  m_IsRunning;
 		core::LayerStack m_LayerStack;

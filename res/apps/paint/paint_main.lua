@@ -8,7 +8,7 @@ local make_paint = function()
 	paint.__index = paint
 
 	function paint:init()
-		self.previous_mouse_pos = Vec2.New(Input.RawMousePos.x, Config.Height - Input.RawMousePos.y)
+		self.previous_mouse_pos = Vec2.New(Input.RawMousePos.x, Window.GetSize().y - Input.RawMousePos.y)
 		self.current_mouse_pos = self.previous_mouse_pos
 
 		self.clicked_mouse_pos = Vec2.New(0.0)	-- Position where the mouse is clicked
@@ -55,10 +55,10 @@ local make_paint = function()
 
 	function paint:update(dt)
 		self.previous_mouse_pos = self.current_mouse_pos
-		self.current_mouse_pos = Vec2.New(Input.RawMousePos.x, Config.Height - Input.RawMousePos.y)
+		self.current_mouse_pos = Vec2.New(Input.RawMousePos.x, Window.GetSize().y - Input.RawMousePos.y)
 
 		if (Input.IsMouseKeyPressed(Input.MOUSE_BUTTON_LEFT)) then
-			self.clicked_mouse_pos = Vec2.New(Input.RawMousePos.x, Config.Height - Input.RawMousePos.y)
+			self.clicked_mouse_pos = self.current_mouse_pos
 		end
 
 		rpc:update()

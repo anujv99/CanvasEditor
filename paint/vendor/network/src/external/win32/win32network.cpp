@@ -14,7 +14,7 @@ namespace network {
 		WSADATA wsaData;
 		ZeroMemory(&wsaData, sizeof(wsaData));
 		int result = WSAStartup(MAKEWORD(2, 2), &wsaData);
-		if (result != 0) {
+		if (result != 0) { 
 			LOG("[WinSock] Failed to initialize WinSock [Error Code : %s]", gai_strerrorA(WSAGetLastError()));
 			return false;
 		}

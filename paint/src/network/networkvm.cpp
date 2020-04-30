@@ -516,6 +516,8 @@ namespace paint {
 
 			ImGui::Text("Average Latency %fms", AVERAGE_LATENCY);
 
+			AVERAGE_LATENCY = 0.0f; 
+
 			if (ImGui::Button("Disconnect")) {
 				// Probably Unsafe
 				NetworkVM::DestroyInst();

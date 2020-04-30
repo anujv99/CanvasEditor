@@ -24,6 +24,11 @@ public:
 	void OnImGuiUpdate() override {
 		paint::NetworkVM::Ref().Gui();
 	}
+	void OnEvent(core::events::Event & e) {
+		if (e.GetEventType() == core::events::EventType::WindowResize) {
+			paint::PaintRenderer::Ref().WindowResized();
+		}
+	}
 private:
 	std::string m_Msg;
 };

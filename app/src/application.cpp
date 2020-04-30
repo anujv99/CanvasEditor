@@ -134,6 +134,7 @@ namespace app {
 		core::events::EventDispatcher dispatcher(e);
 		 
 		dispatcher.Dispatch<core::events::WindowCloseEvent>(BIND_EVENT_FN(Application::OnWindowClose));
+		dispatcher.Dispatch<core::events::WindowResizeEvent>(BIND_EVENT_FN(Application::OnWindowResize));
 
 		for (auto & l : m_LayerStack) {
 			l->OnEvent(e);
@@ -143,6 +144,24 @@ namespace app {
 	bool Application::OnWindowClose(core::events::WindowCloseEvent & e) {
 		m_IsRunning = false;
 		return true;
+	}
+
+	bool Application::OnWindowResize(core::events::WindowResizeEvent & e) {
+		
+		Mat4 projection = Mat4::Ortho(0.0f, (float)e.GetWindowSizeX(), 0.0f, (float)e.GetWindowSizeY(), -1.0f, 1.0f);
+
+		math::MVPStack::Ref().Projection().Pop();
+		math::MVPStack::Ref().Projection().Push(projection);
+
+		graphics::Viewport vp;
+		vp.TopLeftX = 0;
+		vp.TopLeftY = 0;
+		vp.Width = e.GetWindowSizeX();
+		vp.Height = e.GetWindowSizeY();
+
+		graphics::RenderState::Ref().SetViewport(vp);
+
+		return false;
 	}
 
 }

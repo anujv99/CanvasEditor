@@ -5,7 +5,6 @@
 
 * add text drawing support
 * implement undo (Ctrl + Z) and redo (Ctrl + R) commands
-* fix window resizing
 * fix a bug which cause the application to crash when both the users are drawing simultaneously
 
 [LOW PRIORITY]
@@ -22,6 +21,9 @@
 * add batch rendering system for drawing lines
 
 ------------------------------[DONE]------------------------------
+
+[anuj 30-04-2020]
+* fixed window resizing issue
 
 [anuj 29-04-2020]
 * added a few shapes (circle, rectangle)

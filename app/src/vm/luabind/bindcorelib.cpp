@@ -2,6 +2,7 @@
 #include "luabind.h"
 
 #include <core/input.h>
+#include <core/window.h>
 
 namespace app {
 
@@ -227,11 +228,24 @@ namespace app {
 	//----------------WINDOW----------------
 
 	struct LuaBindWindowFunc {
-
+		static int GetSize(lua_State * L) {
+			LUA_CHECK_NUM_PARAMS(0);
+			LUA_PUSH_VEC2(core::Window::Ref().GetWidth(), core::Window::Ref().GetHeight());
+			return 1;
+		}
 	};
+
+	LUA_LIB_START(Window)
+		LUA_LIB_ENTRY("GetSize", LuaBindWindowFunc::GetSize)
+	LUA_LIB_END(Window)
+
+	void LuaBindWindowLib(lua_State * L) {
+		LUA_REGISTER_LIB(Window);
+	}
 
 	void LuaBindCoreLib(lua_State * L) {
 		LuaBindInputLib(L);
+		LuaBindWindowLib(L);
 	}
 
 }
