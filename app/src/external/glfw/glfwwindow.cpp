@@ -54,6 +54,8 @@ namespace app {
 				glfwSetInputMode(m_Window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
 			}
 
+			glfwSwapInterval(0);
+
 			SetCallbacks();
 		}
 

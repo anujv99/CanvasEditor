@@ -68,6 +68,7 @@ namespace paint {
 		std::mutex m_MTX;
 		std::condition_variable m_Sock, m_Send;
 		bool m_IsRunning;
+		bool m_IsConnectionActive;
 
 		SocketType m_Type;
 		std::string m_IP;

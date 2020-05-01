@@ -16,7 +16,8 @@
 
 namespace paint {
 
-	NetworkVM::NetworkVM() : m_IsRunning(true), m_Type(SocketType::INVALID), m_Port(0), m_Conn(nullptr), m_Server(nullptr) {
+	NetworkVM::NetworkVM() : m_IsRunning(true), m_Type(SocketType::INVALID), m_Port(0), 
+		m_Conn(nullptr), m_Server(nullptr), m_IsConnectionActive(false) {
 		network::Network::Initialize();
 		m_NT = std::thread(&NetworkVM::ThreadFunc, this);
 		std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -95,6 +96,8 @@ namespace paint {
 		}
 
 		if (success) {
+			m_IsConnectionActive = true;
+
 			m_SendT = std::thread(&NetworkVM::SendThread, this);
 			m_RecvT = std::thread(&NetworkVM::RecvThread, this);
 		}
@@ -114,12 +117,14 @@ namespace paint {
 			int bytesSent = 0;
 			std::size_t messageSize = m_SendBuffer->Size();
 
-			m_Conn->Send(&messageSize, sizeof(messageSize), bytesSent);
+			if (messageSize == 0 || messageSize > 4096) continue;
+
+			m_IsConnectionActive = m_Conn->Send(&messageSize, sizeof(messageSize), bytesSent);
 			if ((size_t)bytesSent != sizeof(messageSize)) {
 				LOG_ERROR("Failed to send complete message size");
 			}
 
-			m_Conn->Send(m_SendBuffer->Buffer, m_SendBuffer->Size(), bytesSent);
+			m_IsConnectionActive = m_Conn->Send(m_SendBuffer->Buffer, m_SendBuffer->Size(), bytesSent);
 			if ((size_t)bytesSent != messageSize) {
 				LOG_ERROR("Failed to send complete message");
 			}
@@ -137,20 +142,21 @@ namespace paint {
 			
 			int bytesReceived = 0;
 			size_t messageSize = 0;
-			m_Conn->Recv((char *)&messageSize, sizeof(messageSize), bytesReceived);
+			m_IsConnectionActive = m_Conn->Recv((char *)&messageSize, sizeof(messageSize), bytesReceived);
 
 			if ((size_t)bytesReceived != sizeof(messageSize)) {
 				LOG_ERROR("Failed to recv complete message size");
 				continue;
 			}
 
-			if (messageSize == 0) continue;
+			if (messageSize == 0 || messageSize > 4096) continue;
 
 			app::utils::StrongHandle<NetworkMessage> buff = new NetworkMessage(messageSize);
 
 			int receivedMessageSize = 0;
 			while (receivedMessageSize != (int)messageSize) {
-				m_Conn->Recv(buff->Buffer + receivedMessageSize, (int)messageSize - receivedMessageSize, bytesReceived);
+				m_IsConnectionActive = m_Conn->Recv(buff->Buffer + receivedMessageSize, 
+					(int)messageSize - receivedMessageSize, bytesReceived);
 				receivedMessageSize += bytesReceived;
 			}
 
@@ -225,7 +231,11 @@ namespace paint {
 					std::memcpy(userData, msg->Buffer, msg->Size());
 				}
 
-				return (int)messages.size();
+				if (messages.size() == 0) {
+					lua_pushnil(L);
+				}
+
+				return messages.size() == 0 ? 1 : (int)messages.size();
 			}
 
 			static int IsConnected(lua_State * L) {
@@ -298,6 +308,8 @@ namespace paint {
 
 			static int DeMarshall(lua_State * L) {
 				LUA_CHECK_NUM_PARAMS(1);
+
+				if (lua_type(L, 1) != LUA_TUSERDATA) return 0;
 				
 				char * buffer = (char * )lua_touserdata(L, 1);
 				if (buffer == nullptr) return 0;
@@ -412,7 +424,7 @@ namespace paint {
 
 			{
 				for (const auto & msg : m_PrevInputBuffer) {
-					// In this context we are only concerned about the latency check packet
+					// In this context we are only concerned about the latency check message
 					// And the sizeof that packet must be equal to sizeof(message)
 					if (msg->BufferSize != sizeof(message)) continue;
 
@@ -445,7 +457,6 @@ namespace paint {
 
 		static int inputPort = 7454;
 		static std::string inputIP = "192.168.1.105";
-		bool isConnectionActive = false;
 
 		ImGui::Begin("Network", (bool *)0, ImGuiWindowFlags_AlwaysAutoResize);
 
@@ -454,13 +465,7 @@ namespace paint {
 		} else if (m_Conn == nullptr && m_Type != SocketType::INVALID && m_Server == nullptr) {
 			ImGui::Text("Status : Disconnected");
 		} else if (m_Conn != nullptr) {
-
-			// Send some data to check weather is connection is active or not
-			size_t messageSize = 0;
-			int bytesSent = 0;
-			isConnectionActive = m_Conn->Send((const void *)&messageSize, sizeof(messageSize), bytesSent);
-
-			if (!isConnectionActive) {
+			if (!m_IsConnectionActive) {
 				std::lock_guard<std::mutex> lock(m_MTX);
 				delete m_Conn;
 				m_Conn = nullptr;

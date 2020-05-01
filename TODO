@@ -6,6 +6,7 @@
 * add text drawing support
 * implement undo (Ctrl + Z) and redo (Ctrl + R) commands
 * fix a bug which cause the application to crash when both the users are drawing simultaneously
+* check little/big endian and conver data accordingly 
 
 [LOW PRIORITY]
 
@@ -21,6 +22,9 @@
 * add batch rendering system for drawing lines
 
 ------------------------------[DONE]------------------------------
+
+[anuj 1-05-2020]
+* removed connection test from main thread (was causing the application to crash)
 
 [anuj 30-04-2020]
 * fixed window resizing issue

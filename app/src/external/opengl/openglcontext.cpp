@@ -138,7 +138,7 @@ namespace app {
 		}
 
 		void OpenGLContext::BeginFrame() {
-			glClearColor(0.8f, 0.4f, 0.2f, 0.0f);
+			glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT);
 		}
 

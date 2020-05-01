@@ -13,8 +13,8 @@ local make_paint = function()
 
 		self.clicked_mouse_pos = Vec2.New(0.0)	-- Position where the mouse is clicked
 
-		self.brush_size = 1.5
-		self.brush_color = Vec4.New(1.0, 1.0, 0.0, 1.0)
+		self.brush_size = 2.0
+		self.brush_color = Vec4.New(0.0, 0.0, 0.0, 1.0)
 
 		self.current_tool = "BRUSH"
 
@@ -71,6 +71,9 @@ local make_paint = function()
 				rpc:call("draw_line", self.current_mouse_pos.x, self.current_mouse_pos.y,
 					self.previous_mouse_pos.x, self.previous_mouse_pos.y, self.brush_size, self.brush_color.x, self.brush_color.y, self.brush_color.z, self.brush_color.w)
 			end
+
+			ImmGFX.Color(Vec4.New(0.0, 0.0, 0.0, 1.0))
+			ImmGFX.DrawCircleWire(self.current_mouse_pos, self.brush_size)
 		elseif (self.current_tool == "CIRCLE") then
 			if (Input.IsMouseKeyDown(Input.MOUSE_BUTTON_LEFT)) then
 				-- Don't yet draw the circle on the screen. Just show a preview of the circle
@@ -108,8 +111,6 @@ local make_paint = function()
 		end
 
 		PaintRenderer.Render()
-
-		ImmGFX.DrawCircleWire(self.current_mouse_pos, self.brush_size)
 	end
 
 	function paint:gui()
