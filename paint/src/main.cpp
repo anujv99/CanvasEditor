@@ -34,6 +34,9 @@ private:
 };
 
 int main() {
+
+	int x = 0x0001;
+
 	paint::NetworkVM::CreateInst();
 	Application::CreateInst();
 	paint::PaintRenderer::CreateInst();

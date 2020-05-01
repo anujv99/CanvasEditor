@@ -421,7 +421,6 @@ namespace paint {
 			}
 
 			// Check if the packed is received
-
 			{
 				for (const auto & msg : m_PrevInputBuffer) {
 					// In this context we are only concerned about the latency check message

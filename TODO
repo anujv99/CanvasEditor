@@ -6,12 +6,13 @@
 * add text drawing support
 * implement undo (Ctrl + Z) and redo (Ctrl + R) commands
 * fix a bug which cause the application to crash when both the users are drawing simultaneously
-* check little/big endian and conver data accordingly 
+* check little/big endian and convert data accordingly 
 
 [LOW PRIORITY]
 
 * add unicode support
 * test on more unix based os (macos, openBSD etc.)
+* support for adding images
 
 [LOWEST PRIORITY]
 

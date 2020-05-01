@@ -83,7 +83,7 @@ local make_paint = function()
 				ImmGFX.Color(self.brush_color)
 				ImmGFX.DrawCircle(self.clicked_mouse_pos, radius)
 			elseif (Input.IsMouseKeyReleased(Input.MOUSE_BUTTON_LEFT)) then
-				-- When the user release the mouse button then draw the circle
+				-- When the user release the mouse button, draw the circle
 				local radius = self.current_mouse_pos - self.clicked_mouse_pos
 				radius = math.sqrt((radius.x * radius.x) + (radius.y * radius.y))
 

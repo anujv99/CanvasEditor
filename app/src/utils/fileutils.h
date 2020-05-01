@@ -9,7 +9,7 @@
 #include "handledobject.h"
 #include "assert.h"
 
-#define ROOT_PATH "../../../../"
+#define ROOT_PATH ""
 
 namespace app { namespace utils {
 
