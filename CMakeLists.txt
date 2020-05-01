@@ -10,4 +10,4 @@ project(Paint)
 add_subdirectory(app)
 add_subdirectory(paint)
 
-set(VS_STARTUP_PROJECT Application)
+set(VS_STARTUP_PROJECT Paint)

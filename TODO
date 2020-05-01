@@ -25,6 +25,7 @@
 
 [anuj 1-05-2020]
 * removed connection test from main thread (was causing the application to crash)
+* added a check for window collapse (was causing exception)
 
 [anuj 30-04-2020]
 * fixed window resizing issue

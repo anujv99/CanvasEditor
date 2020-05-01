@@ -85,6 +85,8 @@ namespace app {
 			});
 
 			glfwSetWindowSizeCallback(m_Window, [](::GLFWwindow * window, int width, int height) -> void {
+				if (width == 0 || height == 0) return;
+
 				WindowData * data = (WindowData *)glfwGetWindowUserPointer(window);
 				app::core::events::WindowResizeEvent e(width, height);
 				data->Width = e.GetWindowSizeX();
